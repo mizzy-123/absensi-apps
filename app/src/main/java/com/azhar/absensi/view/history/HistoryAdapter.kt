@@ -49,30 +49,30 @@ class HistoryAdapter(
         holder.tvNomor.text = String.valueOf(data.uid)
         holder.tvNama.text = data.nama
         holder.tvLokasi.text = data.lokasi
-        holder.tvAbsenTime.text = data.tanggal
-        holder.tvStatusAbsen.text = data.keterangan
-        holder.tvjumlahspp.text = data.jumlahspp
+//        holder.tvAbsenTime.text = data.tanggal
+//        holder.tvStatusAbsen.text = data.keterangan
+//        holder.tvjumlahspp.text = data.jumlahspp
 
-        Glide.with(mContext)
-            .load(base64ToBitmap(data.fotoSelfie))
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .placeholder(R.drawable.ic_photo_camera)
-            .into(holder.imageProfile)
-
-        when (data.keterangan) {
-            "Absen Masuk" -> {
-                holder.colorStatus.setBackgroundResource(R.drawable.bg_circle_radius)
-                holder.colorStatus.backgroundTintList = ColorStateList.valueOf(Color.GREEN)
-            }
-            "Absen Keluar" -> {
-                holder.colorStatus.setBackgroundResource(R.drawable.bg_circle_radius)
-                holder.colorStatus.backgroundTintList = ColorStateList.valueOf(Color.RED)
-            }
-            "Izin" -> {
-                holder.colorStatus.setBackgroundResource(R.drawable.bg_circle_radius)
-                holder.colorStatus.backgroundTintList = ColorStateList.valueOf(Color.BLUE)
-            }
-        }
+//        Glide.with(mContext)
+//            .load(base64ToBitmap(data.fotoSelfie))
+//            .diskCacheStrategy(DiskCacheStrategy.ALL)
+//            .placeholder(R.drawable.ic_photo_camera)
+//            .into(holder.imageProfile)
+//
+//        when (data.keterangan) {
+//            "Absen Masuk" -> {
+//                holder.colorStatus.setBackgroundResource(R.drawable.bg_circle_radius)
+//                holder.colorStatus.backgroundTintList = ColorStateList.valueOf(Color.GREEN)
+//            }
+//            "Absen Keluar" -> {
+//                holder.colorStatus.setBackgroundResource(R.drawable.bg_circle_radius)
+//                holder.colorStatus.backgroundTintList = ColorStateList.valueOf(Color.RED)
+//            }
+//            "Izin" -> {
+//                holder.colorStatus.setBackgroundResource(R.drawable.bg_circle_radius)
+//                holder.colorStatus.backgroundTintList = ColorStateList.valueOf(Color.BLUE)
+//            }
+//        }
     }
 
     override fun getItemCount(): Int {

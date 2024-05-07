@@ -28,7 +28,7 @@ class ModelDatabase : Serializable {
     lateinit var fotoSelfie: String
 
     @ColumnInfo(name = "tanggal")
-    lateinit var tanggal: String
+    var tanggal: Long = 0
 
     @ColumnInfo(name = "lokasi")
     lateinit var lokasi: String
@@ -37,5 +37,5 @@ class ModelDatabase : Serializable {
     lateinit var keterangan: String
 
     @ColumnInfo(name = "jumlahspp")
-    lateinit var jumlahspp: String
+    var jumlahspp: Int = 0
 }

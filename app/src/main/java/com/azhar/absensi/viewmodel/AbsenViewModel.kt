@@ -2,6 +2,7 @@ package com.azhar.absensi.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import com.azhar.absensi.database.DatabaseClient.Companion.getInstance
 import com.azhar.absensi.database.dao.DatabaseDao
 import com.azhar.absensi.model.ModelDatabase
@@ -23,7 +24,7 @@ class AbsenViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addDataAbsen(
         foto: String, nama: String,
-        tanggal: String, lokasi: String, keterangan: String, jumlahspp: String
+        tanggal: Long, lokasi: String, keterangan: String, jumlahspp: Int
     ) {
         Completable.fromAction {
             val modelDatabase = ModelDatabase()
@@ -35,6 +36,19 @@ class AbsenViewModel(application: Application) : AndroidViewModel(application) {
             modelDatabase.jumlahspp = jumlahspp
 
             databaseDao?.insertData(modelDatabase)
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
+    }
+
+    fun cekDataPerMonth(currentMonth: String): LiveData<Int> {
+        return databaseDao!!.cekDataPerMonth(currentMonth)
+    }
+
+    fun updateJumlahSpp(totalspp: Int, currentMonth: String){
+        Completable.fromAction {
+            databaseDao?.updateJumlahSpp(totalspp, currentMonth)
         }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())

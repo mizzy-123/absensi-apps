@@ -1,6 +1,7 @@
 package com.azhar.absensi.view.absen
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.ProgressDialog
@@ -194,28 +195,31 @@ class AbsenActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     private fun setUploadData() {
         btnAbsen.setOnClickListener {
             val strNama = inputNama.text.toString()
             val strTanggal = inputTanggal.text.toString()
             val strKeterangan = inputKeterangan.text.toString()
             val strjumlahspp = inputjumlahspp.text.toString()
-            if (strFilePath.equals(null) || strNama.isEmpty() || strCurrentLocation.isEmpty()
-                || strTanggal.isEmpty() || strKeterangan.isEmpty()) {
-                Toast.makeText(this@AbsenActivity,
-                    "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show()
-            } else {
-                absenViewModel.addDataAbsen(
-                    strBase64Photo,
-                    strNama,
-                    strTanggal,
-                    strCurrentLocation,
-                    strKeterangan,
-                    strjumlahspp)
-                Toast.makeText(this@AbsenActivity,
-                    "Laporan Anda terkirim, tunggu info selanjutnya ya!", Toast.LENGTH_SHORT).show()
-                finish()
-            }
+//            if (strFilePath.equals(null) || strNama.isEmpty() || strCurrentLocation.isEmpty()
+//                || strTanggal.isEmpty() || strKeterangan.isEmpty()) {
+//                Toast.makeText(this@AbsenActivity,
+//                    "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show()
+//            } else {
+
+
+//                absenViewModel.addDataAbsen(
+//                    "masuk",
+//                    strNama,
+//                    strTanggal,
+//                    "Semarang",
+//                    strKeterangan,
+//                    strjumlahspp)
+//                Toast.makeText(this@AbsenActivity,
+//                    "Laporan Anda terkirim, tunggu info selanjutnya ya!", Toast.LENGTH_SHORT).show()
+//                finish()
+//            }
         }
     }
 
