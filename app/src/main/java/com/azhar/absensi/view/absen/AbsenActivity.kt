@@ -1,6 +1,7 @@
 package com.azhar.absensi.view.absen
 
 import android.Manifest
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.ProgressDialog
@@ -10,29 +11,23 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.view.MenuItem
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.ViewModelProvider
-import com.azhar.absensi.BuildConfig
+import com.azhar.absensi.view.camera.CameraPrev
 import com.azhar.absensi.R
 import com.azhar.absensi.utils.BitmapManager.bitmapToBase64
 import com.azhar.absensi.viewmodel.AbsenViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.gms.location.LocationServices
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.android.synthetic.main.activity_absen.*
 import java.io.File
 import java.io.IOException
@@ -56,11 +51,11 @@ class AbsenActivity : AppCompatActivity() {
     lateinit var strImageName: String
     lateinit var absenViewModel: AbsenViewModel
     lateinit var progressDialog: ProgressDialog
-
+    var uriFile : String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_absen)
-
+        //get uri foto from camera page
         setInitLayout()
         setCurrentLocation()
         setUploadData()
@@ -140,59 +135,68 @@ class AbsenActivity : AppCompatActivity() {
         }
 
         layoutImage.setOnClickListener {
-            Dexter.withContext(this@AbsenActivity)
-                .withPermissions(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                        if (report.areAllPermissionsGranted()) {
-                            try {
-                                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                cameraIntent.putExtra(
-                                    "com.google.assistant.extra.USE_FRONT_CAMERA",
-                                    true
-                                )
-                                cameraIntent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
-                                cameraIntent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
-                                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
-
-                                // Samsung
-                                cameraIntent.putExtra("camerafacing", "front")
-                                cameraIntent.putExtra("previous_mode", "front")
-
-                                // Huawei
-                                cameraIntent.putExtra("default_camera", "1")
-                                cameraIntent.putExtra(
-                                    "default_mode",
-                                    "com.huawei.camera2.mode.photo.PhotoMode")
-                                cameraIntent.putExtra(
-                                    MediaStore.EXTRA_OUTPUT,
-                                    FileProvider.getUriForFile(
-                                        this@AbsenActivity,
-                                        BuildConfig.APPLICATION_ID + ".provider",
-                                        createImageFile()
-                                    )
-                                )
-                                startActivityForResult(cameraIntent, REQ_CAMERA)
-                            } catch (ex: IOException) {
-                                Toast.makeText(this@AbsenActivity,
-                                    "Ups, gagal membuka kamera", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                        permissions: List<PermissionRequest>,
-                        token: PermissionToken) {
-                        token.continuePermissionRequest()
-                    }
-                }).check()
+            val move = Intent(this.application, CameraPrev::class.java)
+            startActivityForResult(move, REQUEST_CODE)
         }
+
+
+
+//        layoutImage.setOnClickListener {
+//            Dexter.withContext(this@AbsenActivity)
+//                .withPermissions(
+//                    Manifest.permission.CAMERA,
+//                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                    Manifest.permission.ACCESS_COARSE_LOCATION,
+//                    Manifest.permission.ACCESS_FINE_LOCATION
+//                )
+//                .withListener(object : MultiplePermissionsListener {
+//                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+//                        if (report.areAllPermissionsGranted()) {
+//                            try {
+//                                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//                                cameraIntent.putExtra(
+//                                    "com.google.assistant.extra.USE_FRONT_CAMERA",
+//                                    true
+//                                )
+//                                cameraIntent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
+//                                cameraIntent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
+//                                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+//
+//                                // Samsung
+//                                cameraIntent.putExtra("camerafacing", "front")
+//                                cameraIntent.putExtra("previous_mode", "front")
+//
+//                                // Huawei
+//                                cameraIntent.putExtra("default_camera", "1")
+//                                cameraIntent.putExtra(
+//                                    "default_mode",
+//                                    "com.huawei.camera2.mode.photo.PhotoMode")
+//                                cameraIntent.putExtra(
+//                                    MediaStore.EXTRA_OUTPUT,
+//                                    FileProvider.getUriForFile(
+//                                        this@AbsenActivity,
+//                                        BuildConfig.APPLICATION_ID + ".provider",
+//                                        createImageFile()
+//                                    )
+//                                )
+//                                startActivityForResult(cameraIntent, REQ_CAMERA)
+//                            } catch (ex: IOException) {
+//                                Toast.makeText(this@AbsenActivity,
+//                                    "Ups, gagal membuka kamera", Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//                    }
+//
+//                    override fun onPermissionRationaleShouldBeShown(
+//                        permissions: List<PermissionRequest>,
+//                        token: PermissionToken) {
+//                        token.continuePermissionRequest()
+//                    }
+//                }).check()
+//        }
     }
+
+
 
     private fun setUploadData() {
         btnAbsen.setOnClickListener {
@@ -231,7 +235,13 @@ class AbsenActivity : AppCompatActivity() {
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        convertImage(strFilePath)
+        //get data uri file foto dari camera page
+        if(requestCode == REQUEST_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                uriFile = data?.getStringExtra("uri_file")
+                imageSelfie.setImageURI(Uri.parse(uriFile))
+            }
+        }
     }
 
     private fun convertImage(imageFilePath: String?) {
@@ -306,5 +316,7 @@ class AbsenActivity : AppCompatActivity() {
 
     companion object {
         const val DATA_TITLE = "TITLE"
+        const val REQUEST_CODE = 123
+
     }
 }
