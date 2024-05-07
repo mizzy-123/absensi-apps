@@ -260,13 +260,14 @@ class AbsenActivity : AppCompatActivity() {
             val strTanggal = inputTanggal.text.toString()
             val strKeterangan = inputKeterangan.text.toString()
             val strjumlahspp = inputjumlahspp.text.toString()
-            if (strFilePath.equals(null) || strNama.isEmpty() || strCurrentLocation.isEmpty()
+//            convertImage(uriFile)
+            if (uriFile.equals(null) || strNama.isEmpty() || strCurrentLocation.isEmpty()
                 || strTanggal.isEmpty() || strKeterangan.isEmpty()) {
                 Toast.makeText(this@AbsenActivity,
                     "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show()
             } else {
                 absenViewModel.addDataAbsen(
-                    strBase64Photo,
+                    uriFile!!,
                     strNama,
                     strTanggal,
                     strCurrentLocation,
