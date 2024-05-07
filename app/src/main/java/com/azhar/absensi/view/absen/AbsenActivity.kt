@@ -6,6 +6,8 @@ import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.IntentSender
+import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -14,6 +16,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.MenuItem
 import android.widget.DatePicker
 import android.widget.Toast
@@ -21,18 +24,24 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.ViewModelProvider
-import com.azhar.absensi.view.camera.CameraPrev
 import com.azhar.absensi.R
 import com.azhar.absensi.utils.BitmapManager.bitmapToBase64
+import com.azhar.absensi.view.camera.CameraPrev
 import com.azhar.absensi.viewmodel.AbsenViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStatusCodes
 import kotlinx.android.synthetic.main.activity_absen.*
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class AbsenActivity : AppCompatActivity() {
     var REQ_CAMERA = 101
@@ -59,6 +68,8 @@ class AbsenActivity : AppCompatActivity() {
         setInitLayout()
         setCurrentLocation()
         setUploadData()
+
+
     }
 
     private fun setCurrentLocation() {
@@ -90,13 +101,54 @@ class AbsenActivity : AppCompatActivity() {
                 } else {
                     progressDialog.dismiss()
                     Toast.makeText(this@AbsenActivity,
-                        "Ups, gagal mendapatkan lokasi. Silahkan periksa GPS atau koneksi internet Anda!",
+                        "Ups, harap mengaktifkan geolocation ponsel Anda",
                         Toast.LENGTH_SHORT).show()
+                    enableLoc()
+
                     strLatitude = "0"
                     strLongitude = "0"
                 }
             }
     }
+
+    /*
+    * function untuk menampilkan pop up alert to enable location
+    * */
+    private fun enableLoc() {
+        val locationRequest: LocationRequest = LocationRequest.create()
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        locationRequest.setInterval(30 * 1000)
+        locationRequest.setFastestInterval(5 * 1000)
+        val builder = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+        builder.setAlwaysShow(true)
+        val result = LocationServices.getSettingsClient(this).checkLocationSettings(builder.build())
+        result.addOnCompleteListener { task ->
+            try {
+                val response = task.getResult(ApiException::class.java)
+
+            } catch (exception: ApiException) {
+                when (exception.statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+
+                        try {
+                            val resolvable = exception as ResolvableApiException
+
+                            resolvable.startResolutionForResult(
+                                this@AbsenActivity,
+                                REQUEST_CHECK_SETTINGS
+                            )
+                        } catch (sendEx: IntentSender.SendIntentException) {
+                            Toast.makeText(this, "Something occured to be error!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+
+                    }
+                }
+            }
+        }}
+
 
     private fun setInitLayout() {
         progressDialog = ProgressDialog(this)
@@ -112,8 +164,10 @@ class AbsenActivity : AppCompatActivity() {
             supportActionBar?.setDisplayShowTitleEnabled(false)
         }
 
-        absenViewModel = ViewModelProvider(this, (ViewModelProvider.AndroidViewModelFactory
-                .getInstance(this.application) as ViewModelProvider.Factory)).get(AbsenViewModel::class.java)
+        absenViewModel = ViewModelProvider(
+            this, (ViewModelProvider.AndroidViewModelFactory
+                .getInstance(this.application) as ViewModelProvider.Factory)
+        ).get(AbsenViewModel::class.java)
 
         inputTanggal.setOnClickListener {
             val tanggalAbsen = Calendar.getInstance()
@@ -139,8 +193,10 @@ class AbsenActivity : AppCompatActivity() {
             startActivityForResult(move, REQUEST_CODE)
         }
 
-
-
+    }
+/*
+* bisa dihapus --nt:manifest_tech
+* */
 //        layoutImage.setOnClickListener {
 //            Dexter.withContext(this@AbsenActivity)
 //                .withPermissions(
@@ -194,7 +250,7 @@ class AbsenActivity : AppCompatActivity() {
 //                    }
 //                }).check()
 //        }
-    }
+
 
 
 
@@ -223,6 +279,9 @@ class AbsenActivity : AppCompatActivity() {
         }
     }
 
+    /*
+    * bagian ini boleh dihapus --nt:manifest_tech
+    * */
     @Throws(IOException::class)
     private fun createImageFile(): File {
         strTimeStamp = SimpleDateFormat("dd MMMM yyyy HH:mm:ss").format(Date())
@@ -242,8 +301,24 @@ class AbsenActivity : AppCompatActivity() {
                 imageSelfie.setImageURI(Uri.parse(uriFile))
             }
         }
+        //result jika lokasi berhasil di enable
+        else if(requestCode == REQUEST_CHECK_SETTINGS){
+            when(resultCode) {
+                Activity.RESULT_OK -> {
+                    Toast.makeText(this, "Successfully get location", Toast.LENGTH_SHORT).show()
+                    onBackPressed()
+                }
+                Activity.RESULT_CANCELED -> {
+                    Toast.makeText(this, "failed get location, please enable location", Toast.LENGTH_SHORT).show()
+                    onBackPressed()
+                }
+            }
+        }
     }
 
+    /*
+    * bagian ini boleh di hapus --nt:manifest_tech
+    * */
     private fun convertImage(imageFilePath: String?) {
         val imageFile = File(imageFilePath)
         if (imageFile.exists()) {
@@ -317,6 +392,6 @@ class AbsenActivity : AppCompatActivity() {
     companion object {
         const val DATA_TITLE = "TITLE"
         const val REQUEST_CODE = 123
-
+        const val REQUEST_CHECK_SETTINGS = 888
     }
 }
