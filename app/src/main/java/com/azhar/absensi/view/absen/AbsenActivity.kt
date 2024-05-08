@@ -393,6 +393,6 @@ class AbsenActivity : AppCompatActivity() {
     companion object {
         const val DATA_TITLE = "TITLE"
         const val REQUEST_CODE = 123
-        const val REQUEST_CHECK_SETTINGS = 888
+        const val REQUEST_CHECK_SETTINGS = 255
     }
 }
