@@ -1,52 +1,52 @@
 package com.azhar.absensi.view.absen
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.DatePickerDialog.OnDateSetListener
 import android.app.ProgressDialog
 import android.content.Intent
+import android.content.IntentSender
+import android.content.IntentSender.SendIntentException
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.location.Geocoder
+import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import android.view.MenuItem
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.ViewModelProvider
-import com.azhar.absensi.BuildConfig
 import com.azhar.absensi.R
 import com.azhar.absensi.utils.BitmapManager.bitmapToBase64
+import com.azhar.absensi.view.camera.CameraPrev
 import com.azhar.absensi.viewmodel.AbsenViewModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionRequest
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStatusCodes
 import kotlinx.android.synthetic.main.activity_absen.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class AbsenActivity : AppCompatActivity() {
     var REQ_CAMERA = 101
@@ -66,15 +66,16 @@ class AbsenActivity : AppCompatActivity() {
     lateinit var strImageName: String
     lateinit var absenViewModel: AbsenViewModel
     lateinit var progressDialog: ProgressDialog
-    var cekM: Boolean = false
-
+    var uriFile : String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_absen)
-
+        //get uri foto from camera page
         setInitLayout()
         setCurrentLocation()
         setUploadData()
+
+
     }
 
     private fun setCurrentLocation() {
@@ -106,13 +107,54 @@ class AbsenActivity : AppCompatActivity() {
                 } else {
                     progressDialog.dismiss()
                     Toast.makeText(this@AbsenActivity,
-                        "Ups, gagal mendapatkan lokasi. Silahkan periksa GPS atau koneksi internet Anda!",
+                        "Ups, harap mengaktifkan geolocation ponsel Anda",
                         Toast.LENGTH_SHORT).show()
+                    enableLoc()
+
                     strLatitude = "0"
                     strLongitude = "0"
                 }
             }
     }
+
+    /*
+    * function untuk menampilkan pop up alert to enable location
+    * */
+    private fun enableLoc() {
+        val locationRequest: LocationRequest = LocationRequest.create()
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+        locationRequest.setInterval(30 * 1000)
+        locationRequest.setFastestInterval(5 * 1000)
+        val builder = LocationSettingsRequest.Builder()
+            .addLocationRequest(locationRequest)
+        builder.setAlwaysShow(true)
+        val result = LocationServices.getSettingsClient(this).checkLocationSettings(builder.build())
+        result.addOnCompleteListener { task ->
+            try {
+                val response = task.getResult(ApiException::class.java)
+
+            } catch (exception: ApiException) {
+                when (exception.statusCode) {
+                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+
+                        try {
+                            val resolvable = exception as ResolvableApiException
+
+                            resolvable.startResolutionForResult(
+                                this@AbsenActivity,
+                                REQUEST_CHECK_SETTINGS
+                            )
+                        } catch (sendEx: IntentSender.SendIntentException) {
+                            Toast.makeText(this, "Something occured to be error!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+
+                    }
+                }
+            }
+        }}
+
 
     private fun setInitLayout() {
         progressDialog = ProgressDialog(this)
@@ -128,8 +170,10 @@ class AbsenActivity : AppCompatActivity() {
             supportActionBar?.setDisplayShowTitleEnabled(false)
         }
 
-        absenViewModel = ViewModelProvider(this, (ViewModelProvider.AndroidViewModelFactory
-                .getInstance(this.application) as ViewModelProvider.Factory)).get(AbsenViewModel::class.java)
+        absenViewModel = ViewModelProvider(
+            this, (ViewModelProvider.AndroidViewModelFactory
+                .getInstance(this.application) as ViewModelProvider.Factory)
+        ).get(AbsenViewModel::class.java)
 
         inputTanggal.setOnClickListener {
             val tanggalAbsen = Calendar.getInstance()
@@ -152,142 +196,121 @@ class AbsenActivity : AppCompatActivity() {
         }
 
         layoutImage.setOnClickListener {
-            Dexter.withContext(this@AbsenActivity)
-                .withPermissions(
-                    Manifest.permission.CAMERA,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                )
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                        if (report.areAllPermissionsGranted()) {
-                            try {
-                                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                                cameraIntent.putExtra(
-                                    "com.google.assistant.extra.USE_FRONT_CAMERA",
-                                    true
-                                )
-                                cameraIntent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
-                                cameraIntent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
-                                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
-
-                                // Samsung
-                                cameraIntent.putExtra("camerafacing", "front")
-                                cameraIntent.putExtra("previous_mode", "front")
-
-                                // Huawei
-                                cameraIntent.putExtra("default_camera", "1")
-                                cameraIntent.putExtra(
-                                    "default_mode",
-                                    "com.huawei.camera2.mode.photo.PhotoMode")
-                                cameraIntent.putExtra(
-                                    MediaStore.EXTRA_OUTPUT,
-                                    FileProvider.getUriForFile(
-                                        this@AbsenActivity,
-                                        BuildConfig.APPLICATION_ID + ".provider",
-                                        createImageFile()
-                                    )
-                                )
-                                startActivityForResult(cameraIntent, REQ_CAMERA)
-                            } catch (ex: IOException) {
-                                Toast.makeText(this@AbsenActivity,
-                                    "Ups, gagal membuka kamera", Toast.LENGTH_SHORT).show()
-                            }
-                        }
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                        permissions: List<PermissionRequest>,
-                        token: PermissionToken) {
-                        token.continuePermissionRequest()
-                    }
-                }).check()
+            val move = Intent(this.application, CameraPrev::class.java)
+            startActivityForResult(move, REQUEST_CODE)
         }
-    }
 
-    @SuppressLint("SuspiciousIndentation")
+    }
+    /*
+    * bisa dihapus --nt:manifest_tech
+    * */
+//        layoutImage.setOnClickListener {
+//            Dexter.withContext(this@AbsenActivity)
+//                .withPermissions(
+//                    Manifest.permission.CAMERA,
+//                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+//                    Manifest.permission.ACCESS_COARSE_LOCATION,
+//                    Manifest.permission.ACCESS_FINE_LOCATION
+//                )
+//                .withListener(object : MultiplePermissionsListener {
+//                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
+//                        if (report.areAllPermissionsGranted()) {
+//                            try {
+//                                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+//                                cameraIntent.putExtra(
+//                                    "com.google.assistant.extra.USE_FRONT_CAMERA",
+//                                    true
+//                                )
+//                                cameraIntent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
+//                                cameraIntent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
+//                                cameraIntent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+//
+//                                // Samsung
+//                                cameraIntent.putExtra("camerafacing", "front")
+//                                cameraIntent.putExtra("previous_mode", "front")
+//
+//                                // Huawei
+//                                cameraIntent.putExtra("default_camera", "1")
+//                                cameraIntent.putExtra(
+//                                    "default_mode",
+//                                    "com.huawei.camera2.mode.photo.PhotoMode")
+//                                cameraIntent.putExtra(
+//                                    MediaStore.EXTRA_OUTPUT,
+//                                    FileProvider.getUriForFile(
+//                                        this@AbsenActivity,
+//                                        BuildConfig.APPLICATION_ID + ".provider",
+//                                        createImageFile()
+//                                    )
+//                                )
+//                                startActivityForResult(cameraIntent, REQ_CAMERA)
+//                            } catch (ex: IOException) {
+//                                Toast.makeText(this@AbsenActivity,
+//                                    "Ups, gagal membuka kamera", Toast.LENGTH_SHORT).show()
+//                            }
+//                        }
+//                    }
+//
+//                    override fun onPermissionRationaleShouldBeShown(
+//                        permissions: List<PermissionRequest>,
+//                        token: PermissionToken) {
+//                        token.continuePermissionRequest()
+//                    }
+//                }).check()
+//        }
+
+
+
+
     private fun setUploadData() {
         btnAbsen.setOnClickListener {
             val strNama = inputNama.text.toString()
             val strTanggal = inputTanggal.text.toString()
             val strKeterangan = inputKeterangan.text.toString()
-            val strjumlahspp = inputjumlahspp.text.toString()
+            val jumlahspp = inputjumlahspp.text.toString().toInt()
+//            convertImage(uriFile)
 
-//            absenViewModel.addDataAbsen(
-//                    "masuk",
-//                    strNama,
-//                    Date(timestamp),
-//                    "Semarang",
-//                    strKeterangan,
-//                    1000)
-//                Toast.makeText(this@AbsenActivity,
-//                    "Laporan Anda terkirim, tunggu info selanjutnya ya!", Toast.LENGTH_SHORT).show()
-
-            val mainScope = MainScope()
-            mainScope.launch {
-                try {
-                    withContext(Dispatchers.IO) {
-                        val getDataCount = absenViewModel.cekDataPerMonth(getTwoDigitMonthFromTimestamp(timestamp))
-                        withContext(Dispatchers.Main) {
-                            if (getDataCount != 0) {
-                                absenViewModel.updateJumlahSpp(1000, getTwoDigitMonthFromTimestamp(timestamp))
-                            } else {
-                                absenViewModel.addDataAbsen(
-                                    "masuk",
-                                    strNama,
-                                    Date(timestamp),
-                                    "Semarang",
-                                    strKeterangan,
-                                    1000
-                                )
-                            }
-                            Toast.makeText(
-                                this@AbsenActivity,
-                                "Laporan Anda terkirim, tunggu info selanjutnya ya!",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        Log.d("cek", getDataCount.toString())
-                    }
-                } catch (e: TimeoutCancellationException) {
-                    Log.e("cek", "Korutin memakan waktu terlalu lama!")
-                }
-            }
-//            Log.d("cek", cek.toString())
-//            if (cek != 0 && cek != null){
-//                absenViewModel.updateJumlahSpp(1000, getTwoDigitMonthFromTimestamp(timestamp))
-//                Toast.makeText(this@AbsenActivity,
-//                    "if", Toast.LENGTH_SHORT).show()
-//            } else {
-//                absenViewModel.addDataAbsen(
-//                    "masuk",
-//                    strNama,
-//                    Date(timestamp),
-//                    "Semarang",
-//                    strKeterangan,
-//                    1000)
-//                Toast.makeText(this@AbsenActivity,
-//                    "else", Toast.LENGTH_SHORT).show()
-//            }
-//
-//            if (strFilePath.equals(null) || strNama.isEmpty() || strCurrentLocation.isEmpty()
+            /* Jika ingin mengaktifkan fitur lokasi dan kamera hilangkan comment dibawah */
+//            if (uriFile.equals(null) || strNama.isEmpty() || strCurrentLocation.isEmpty()
 //                || strTanggal.isEmpty() || strKeterangan.isEmpty()) {
 //                Toast.makeText(this@AbsenActivity,
 //                    "Data tidak boleh ada yang kosong!", Toast.LENGTH_SHORT).show()
 //            } else {
+                val mainScope = MainScope()
+                mainScope.launch {
+                    try {
+                        withContext(Dispatchers.IO) {
+                            val getDataCount = absenViewModel.cekDataPerMonth(getTwoDigitMonthFromTimestamp(timestamp))
+                            withContext(Dispatchers.Main) {
+                                if (getDataCount != 0) {
+                                    absenViewModel.updateJumlahSpp(jumlahspp, getTwoDigitMonthFromTimestamp(timestamp))
+                                } else {
 
+                                    /* Jika ingin mengaktifkan fitur camera ganti masuk dengan uriFile!!
+                                    * dan ganti Semarang dengan strCurrentLocation */
+                                    absenViewModel.addDataAbsen(
+                                        "masuk",
+                                        strNama,
+                                        Date(timestamp),
+                                        "Semarang",
+                                        strKeterangan,
+                                        jumlahspp
+                                    )
+                                }
+                                Toast.makeText(
+                                    this@AbsenActivity,
+                                    "Laporan Anda terkirim, tunggu info selanjutnya ya!",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            Log.d("cek", getDataCount.toString())
+                        }
+                    } catch (e: TimeoutCancellationException) {
+                        Log.e("cek", "Korutin memakan waktu terlalu lama!")
+                    }
+                }
+                finish()
 
-//                absenViewModel.addDataAbsen(
-//                    "masuk",
-//                    strNama,
-//                    strTanggal,
-//                    "Semarang",
-//                    strKeterangan,
-//                    strjumlahspp)
-//                Toast.makeText(this@AbsenActivity,
-//                    "Laporan Anda terkirim, tunggu info selanjutnya ya!", Toast.LENGTH_SHORT).show()
-//                finish()
+            /* Jika ingin mengaktifkan fitur lokasi dan kamera hilangkan comment dibawah */
 //            }
         }
     }
@@ -298,6 +321,9 @@ class AbsenActivity : AppCompatActivity() {
         return dateFormat.format(date)
     }
 
+    /*
+    * bagian ini boleh dihapus --nt:manifest_tech
+    * */
     @Throws(IOException::class)
     private fun createImageFile(): File {
         strTimeStamp = SimpleDateFormat("dd MMMM yyyy HH:mm:ss").format(Date())
@@ -310,9 +336,31 @@ class AbsenActivity : AppCompatActivity() {
 
     public override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        convertImage(strFilePath)
+        //get data uri file foto dari camera page
+        if(requestCode == REQUEST_CODE){
+            if(resultCode == Activity.RESULT_OK){
+                uriFile = data?.getStringExtra("uri_file")
+                imageSelfie.setImageURI(Uri.parse(uriFile))
+            }
+        }
+        //result jika lokasi berhasil di enable
+        else if(requestCode == REQUEST_CHECK_SETTINGS){
+            when(resultCode) {
+                Activity.RESULT_OK -> {
+                    Toast.makeText(this, "Successfully get location", Toast.LENGTH_SHORT).show()
+                    onBackPressed()
+                }
+                Activity.RESULT_CANCELED -> {
+                    Toast.makeText(this, "failed get location, please enable location", Toast.LENGTH_SHORT).show()
+                    onBackPressed()
+                }
+            }
+        }
     }
 
+    /*
+    * bagian ini boleh di hapus --nt:manifest_tech
+    * */
     private fun convertImage(imageFilePath: String?) {
         val imageFile = File(imageFilePath)
         if (imageFile.exists()) {
@@ -385,5 +433,7 @@ class AbsenActivity : AppCompatActivity() {
 
     companion object {
         const val DATA_TITLE = "TITLE"
+        const val REQUEST_CODE = 123
+        const val REQUEST_CHECK_SETTINGS = 255
     }
 }
