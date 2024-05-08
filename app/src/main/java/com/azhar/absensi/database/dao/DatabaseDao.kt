@@ -30,9 +30,9 @@ interface DatabaseDao {
     @Query("DELETE FROM tbl_absensi")
     fun deleteAllHistory()
 
-    @Query("SELECT COUNT(*) FROM tbl_absensi WHERE strftime('%m', tanggal) = :currentMonth")
-    fun cekDataPerMonth(currentMonth: String): LiveData<Int>
+    @Query("SELECT COUNT(*) FROM tbl_absensi WHERE strftime('%m', datetime(tanggal / 1000, 'unixepoch')) = :currentMonth")
+    fun cekDataPerMonth(currentMonth: String): Int
 
-    @Query("UPDATE tbl_absensi SET jumlahspp = jumlahspp + :totalspp WHERE strftime('%m', tanggal) = :currentMonth")
+    @Query("UPDATE tbl_absensi SET jumlahspp = jumlahspp + :totalspp WHERE strftime('%m', datetime(tanggal / 1000, 'unixepoch')) = :currentMonth")
     fun updateJumlahSpp(totalspp: Int, currentMonth: String)
 }

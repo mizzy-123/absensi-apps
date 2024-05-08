@@ -3,6 +3,7 @@ package com.azhar.absensi.database
 import androidx.room.Database
 import com.azhar.absensi.model.ModelDatabase
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.azhar.absensi.database.dao.DatabaseDao
 
 /**
@@ -15,6 +16,7 @@ import com.azhar.absensi.database.dao.DatabaseDao
  */
 
 @Database(entities = [ModelDatabase::class], version = 1, exportSchema = false)
+@TypeConverters(DateConverters::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun databaseDao(): DatabaseDao?
 }

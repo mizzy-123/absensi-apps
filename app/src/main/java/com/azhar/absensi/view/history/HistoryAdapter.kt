@@ -6,6 +6,7 @@ import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +18,9 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.imageview.ShapeableImageView
 import kotlinx.android.synthetic.main.list_history_absen.view.*
 import java.lang.String
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import kotlin.Int
 
 /**
@@ -40,15 +44,25 @@ class HistoryAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_history_absen, parent, false)
+        /* kode asli, kalau tidak digunakan bisa dihapus --nt:manifestasi_tech*/
+//        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_history_absen, parent, false)
+
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_history_spp, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = modelDatabase[position]
-        holder.tvNomor.text = String.valueOf(data.uid)
-        holder.tvNama.text = data.nama
-        holder.tvLokasi.text = data.lokasi
+        /* convert timestamp menjadi bulan dan tahun */
+        val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+        holder.tanggal.text = data.tanggal.let { dateFormat.format(it) }
+        holder.total.text = data.jumlahspp.toString()
+
+        /* kode asli, kalau tidak digunakan bisa dihapus --nt:manifestasi_tech*/
+//        val data = modelDatabase[position]
+//        holder.tvNomor.text = String.valueOf(data.uid)
+//        holder.tvNama.text = data.nama
+//        holder.tvLokasi.text = data.lokasi
 //        holder.tvAbsenTime.text = data.tanggal
 //        holder.tvStatusAbsen.text = data.keterangan
 //        holder.tvjumlahspp.text = data.jumlahspp
@@ -80,22 +94,27 @@ class HistoryAdapter(
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var tvStatusAbsen: TextView = itemView.tvStatusAbsen
-        var tvNomor: TextView = itemView.tvNomor
-        var tvNama: TextView = itemView.tvNama
-        var tvLokasi: TextView = itemView.tvLokasi
-        var tvAbsenTime: TextView = itemView.tvAbsenTime
-        var cvHistory: CardView = itemView.cvHistory
-        var imageProfile: ShapeableImageView = itemView.imageProfile
-        var colorStatus: View = itemView.colorStatus
-        var tvjumlahspp: TextView = itemView.tvjumlahspp
 
-        init {
-            cvHistory.setOnClickListener {
-                val modelLaundry = modelDatabase[adapterPosition]
-                mAdapterCallback.onDelete(modelLaundry)
-            }
-        }
+        /* kode asli, kalau tidak digunakan bisa dihapus --nt:manifestasi_tech*/
+//        var tvStatusAbsen: TextView = itemView.tvStatusAbsen
+//        var tvNomor: TextView = itemView.tvNomor
+//        var tvNama: TextView = itemView.tvNama
+//        var tvLokasi: TextView = itemView.tvLokasi
+//        var tvAbsenTime: TextView = itemView.tvAbsenTime
+//        var cvHistory: CardView = itemView.cvHistory
+//        var imageProfile: ShapeableImageView = itemView.imageProfile
+//        var colorStatus: View = itemView.colorStatus
+//        var tvjumlahspp: TextView = itemView.tvjumlahspp
+
+        val tanggal: TextView = itemView.findViewById(R.id.tv_tanggal)
+        val total: TextView = itemView.findViewById(R.id.total)
+//        val cvHistory: LinearLayout = itemView.findViewById(R.id.cvHistory)
+//        init {
+//            cvHistory.setOnClickListener {
+//                val modelLaundry = modelDatabase[adapterPosition]
+//                mAdapterCallback.onDelete(modelLaundry)
+//            }
+//        }
     }
 
     interface HistoryAdapterCallback {

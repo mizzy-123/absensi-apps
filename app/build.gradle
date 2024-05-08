@@ -61,4 +61,6 @@ dependencies {
 
     // Custom Permission
     implementation 'com.karumi:dexter:6.2.2'
+
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
 }

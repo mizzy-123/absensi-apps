@@ -14,6 +14,7 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.view.MenuItem
 import android.widget.DatePicker
 import android.widget.Toast
@@ -35,6 +36,13 @@ import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import kotlinx.android.synthetic.main.activity_absen.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -47,6 +55,7 @@ class AbsenActivity : AppCompatActivity() {
     var strFilePath: String = ""
     var strLatitude = "0"
     var strLongitude = "0"
+    var timestamp: Long = 0
     lateinit var fileDirectoty: File
     lateinit var imageFilename: File
     lateinit var exifInterface: ExifInterface
@@ -57,6 +66,7 @@ class AbsenActivity : AppCompatActivity() {
     lateinit var strImageName: String
     lateinit var absenViewModel: AbsenViewModel
     lateinit var progressDialog: ProgressDialog
+    var cekM: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,6 +138,7 @@ class AbsenActivity : AppCompatActivity() {
                     tanggalAbsen[Calendar.YEAR] = year
                     tanggalAbsen[Calendar.MONTH] = monthOfYear
                     tanggalAbsen[Calendar.DAY_OF_MONTH] = dayOfMonth
+                    timestamp = tanggalAbsen.timeInMillis
                     val strFormatDefault = "dd MMMM yyyy HH:mm"
                     val simpleDateFormat = SimpleDateFormat(strFormatDefault, Locale.getDefault())
                     inputTanggal.setText(simpleDateFormat.format(tanggalAbsen.time))
@@ -202,6 +213,64 @@ class AbsenActivity : AppCompatActivity() {
             val strTanggal = inputTanggal.text.toString()
             val strKeterangan = inputKeterangan.text.toString()
             val strjumlahspp = inputjumlahspp.text.toString()
+
+//            absenViewModel.addDataAbsen(
+//                    "masuk",
+//                    strNama,
+//                    Date(timestamp),
+//                    "Semarang",
+//                    strKeterangan,
+//                    1000)
+//                Toast.makeText(this@AbsenActivity,
+//                    "Laporan Anda terkirim, tunggu info selanjutnya ya!", Toast.LENGTH_SHORT).show()
+
+            val mainScope = MainScope()
+            mainScope.launch {
+                try {
+                    withContext(Dispatchers.IO) {
+                        val getDataCount = absenViewModel.cekDataPerMonth(getTwoDigitMonthFromTimestamp(timestamp))
+                        withContext(Dispatchers.Main) {
+                            if (getDataCount != 0) {
+                                absenViewModel.updateJumlahSpp(1000, getTwoDigitMonthFromTimestamp(timestamp))
+                            } else {
+                                absenViewModel.addDataAbsen(
+                                    "masuk",
+                                    strNama,
+                                    Date(timestamp),
+                                    "Semarang",
+                                    strKeterangan,
+                                    1000
+                                )
+                            }
+                            Toast.makeText(
+                                this@AbsenActivity,
+                                "Laporan Anda terkirim, tunggu info selanjutnya ya!",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        Log.d("cek", getDataCount.toString())
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    Log.e("cek", "Korutin memakan waktu terlalu lama!")
+                }
+            }
+//            Log.d("cek", cek.toString())
+//            if (cek != 0 && cek != null){
+//                absenViewModel.updateJumlahSpp(1000, getTwoDigitMonthFromTimestamp(timestamp))
+//                Toast.makeText(this@AbsenActivity,
+//                    "if", Toast.LENGTH_SHORT).show()
+//            } else {
+//                absenViewModel.addDataAbsen(
+//                    "masuk",
+//                    strNama,
+//                    Date(timestamp),
+//                    "Semarang",
+//                    strKeterangan,
+//                    1000)
+//                Toast.makeText(this@AbsenActivity,
+//                    "else", Toast.LENGTH_SHORT).show()
+//            }
+//
 //            if (strFilePath.equals(null) || strNama.isEmpty() || strCurrentLocation.isEmpty()
 //                || strTanggal.isEmpty() || strKeterangan.isEmpty()) {
 //                Toast.makeText(this@AbsenActivity,
@@ -221,6 +290,12 @@ class AbsenActivity : AppCompatActivity() {
 //                finish()
 //            }
         }
+    }
+
+    fun getTwoDigitMonthFromTimestamp(timestamp: Long): String {
+        val date = Date(timestamp)
+        val dateFormat = SimpleDateFormat("MM", Locale.getDefault())
+        return dateFormat.format(date)
     }
 
     @Throws(IOException::class)

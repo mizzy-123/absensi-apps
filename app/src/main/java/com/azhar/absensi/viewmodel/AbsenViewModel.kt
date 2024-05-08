@@ -9,6 +9,7 @@ import com.azhar.absensi.model.ModelDatabase
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.schedulers.Schedulers
+import java.util.Date
 
 /**
  * Created by Azhar Rivaldi on 19-11-2021
@@ -24,7 +25,7 @@ class AbsenViewModel(application: Application) : AndroidViewModel(application) {
 
     fun addDataAbsen(
         foto: String, nama: String,
-        tanggal: Long, lokasi: String, keterangan: String, jumlahspp: Int
+        tanggal: Date, lokasi: String, keterangan: String, jumlahspp: Int
     ) {
         Completable.fromAction {
             val modelDatabase = ModelDatabase()
@@ -42,7 +43,7 @@ class AbsenViewModel(application: Application) : AndroidViewModel(application) {
             .subscribe()
     }
 
-    fun cekDataPerMonth(currentMonth: String): LiveData<Int> {
+    fun cekDataPerMonth(currentMonth: String): Int {
         return databaseDao!!.cekDataPerMonth(currentMonth)
     }
 

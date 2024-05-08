@@ -3,7 +3,10 @@ package com.azhar.absensi.model
 import androidx.room.PrimaryKey
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.TypeConverters
+import com.azhar.absensi.database.DateConverters
 import java.io.Serializable
+import java.util.Date
 
 /**
  * Created by Azhar Rivaldi on 19-11-2021
@@ -15,6 +18,7 @@ import java.io.Serializable
  */
 
 @Entity(tableName = "tbl_absensi")
+@TypeConverters(DateConverters::class)
 class ModelDatabase : Serializable {
 
     @PrimaryKey(autoGenerate = true)
@@ -28,7 +32,7 @@ class ModelDatabase : Serializable {
     lateinit var fotoSelfie: String
 
     @ColumnInfo(name = "tanggal")
-    var tanggal: Long = 0
+    lateinit var tanggal: Date
 
     @ColumnInfo(name = "lokasi")
     lateinit var lokasi: String
