@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.azhar.absensi.R
 import com.azhar.absensi.model.ModelDatabase
 import com.azhar.absensi.utils.BitmapManager.base64ToBitmap
+import com.azhar.absensi.utils.formatToRupiah
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.imageview.ShapeableImageView
@@ -56,7 +57,7 @@ class HistoryAdapter(
         /* convert timestamp menjadi bulan dan tahun */
         val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
         holder.tanggal.text = data.tanggal.let { dateFormat.format(it) }
-        holder.total.text = data.jumlahspp.toString()
+        holder.total.text = formatToRupiah(data.jumlahspp)
 
         /* kode asli, kalau tidak digunakan bisa dihapus --nt:manifestasi_tech*/
 //        val data = modelDatabase[position]
