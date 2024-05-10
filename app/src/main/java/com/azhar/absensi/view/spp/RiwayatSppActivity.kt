@@ -6,16 +6,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.azhar.absensi.R
+import com.azhar.absensi.databinding.ActivityRiwayatSppBinding
 
 class RiwayatSppActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityRiwayatSppBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_riwayat_spp)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding = ActivityRiwayatSppBinding.inflate(layoutInflater)
+        setContentView(binding.root)
     }
 }
