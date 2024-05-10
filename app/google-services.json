@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "312377286917",
+    "project_id": "gaji-1a496",
+    "storage_bucket": "gaji-1a496.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:312377286917:android:2eb6a9456f0abdbbae176c",
+        "android_client_info": {
+          "package_name": "com.azhar.absensi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBMbXIczfFtl5_ihAUVuNpTWl8G3TP4E7A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
