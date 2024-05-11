@@ -10,48 +10,50 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.azhar.absensi.R
+import com.azhar.absensi.databinding.ActivityHistoryBinding
 import com.azhar.absensi.model.ModelDatabase
 import com.azhar.absensi.view.history.HistoryAdapter.HistoryAdapterCallback
 import com.azhar.absensi.viewmodel.HistoryViewModel
-import kotlinx.android.synthetic.main.activity_history.*
 
 class HistoryActivity : AppCompatActivity(), HistoryAdapterCallback {
     var modelDatabaseList: MutableList<ModelDatabase> = ArrayList()
     lateinit var historyAdapter: HistoryAdapter
     lateinit var historyViewModel: HistoryViewModel
+    private lateinit var binding: ActivityHistoryBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_history)
+        binding = ActivityHistoryBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setInitLayout()
         setViewModel()
     }
 
     private fun setInitLayout() {
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         if (supportActionBar != null) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setDisplayShowTitleEnabled(false)
         }
 
-        tvNotFound.visibility = View.GONE
+        binding.tvNotFound.visibility = View.GONE
 
         historyAdapter = HistoryAdapter(this, modelDatabaseList, this)
-        rvHistory.setHasFixedSize(true)
-        rvHistory.layoutManager = LinearLayoutManager(this)
-        rvHistory.adapter = historyAdapter
+        binding.rvHistory.setHasFixedSize(true)
+        binding.rvHistory.layoutManager = LinearLayoutManager(this)
+        binding.rvHistory.adapter = historyAdapter
     }
 
     private fun setViewModel() {
         historyViewModel = ViewModelProviders.of(this).get(HistoryViewModel::class.java)
         historyViewModel.dataLaporan.observe(this) { modelDatabases: List<ModelDatabase> ->
             if (modelDatabases.isEmpty()) {
-                tvNotFound.visibility = View.VISIBLE
-                rvHistory.visibility = View.GONE
+                binding.tvNotFound.visibility = View.VISIBLE
+                binding.rvHistory.visibility = View.GONE
             } else {
-                tvNotFound.visibility = View.GONE
-                rvHistory.visibility = View.VISIBLE
+                binding.tvNotFound.visibility = View.GONE
+                binding.rvHistory.visibility = View.VISIBLE
             }
             historyAdapter.setDataAdapter(modelDatabases)
         }

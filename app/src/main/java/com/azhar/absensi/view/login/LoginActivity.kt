@@ -8,19 +8,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.azhar.absensi.R
+import com.azhar.absensi.databinding.ActivityLoginBinding
 import com.azhar.absensi.utils.SessionLogin
 import com.azhar.absensi.view.main.MainActivity
-import kotlinx.android.synthetic.main.activity_login.*
 
 class LoginActivity : AppCompatActivity() {
     lateinit var session: SessionLogin
     lateinit var strNama: String
     lateinit var strPassword: String
+    private lateinit var binding: ActivityLoginBinding
     var REQ_PERMISSION = 101
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        binding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         setPermission()
         setInitLayout()
@@ -46,9 +48,9 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
-        btnLogin.setOnClickListener {
-            strNama = inputNama.text.toString()
-            strPassword = inputPassword.text.toString()
+        binding.btnLogin.setOnClickListener {
+            strNama = binding.inputNama.text.toString()
+            strPassword = binding.inputPassword.text.toString()
 
             if (strNama.isEmpty() || strPassword.isEmpty()) {
                 Toast.makeText(this@LoginActivity, "Form tidak boleh kosong!",

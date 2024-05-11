@@ -17,7 +17,6 @@ import com.azhar.absensi.utils.formatToRupiah
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.imageview.ShapeableImageView
-import kotlinx.android.synthetic.main.list_history_absen.view.*
 import java.lang.String
 import java.text.SimpleDateFormat
 import java.util.Date

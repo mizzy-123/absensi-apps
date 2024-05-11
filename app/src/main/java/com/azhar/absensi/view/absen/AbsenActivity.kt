@@ -25,6 +25,7 @@ import androidx.core.app.ActivityCompat
 import androidx.exifinterface.media.ExifInterface
 import androidx.lifecycle.ViewModelProvider
 import com.azhar.absensi.R
+import com.azhar.absensi.databinding.ActivityAbsenBinding
 import com.azhar.absensi.utils.BitmapManager.bitmapToBase64
 import com.azhar.absensi.view.camera.CameraPrev
 import com.azhar.absensi.viewmodel.AbsenViewModel
@@ -36,7 +37,6 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStatusCodes
-import kotlinx.android.synthetic.main.activity_absen.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.TimeoutCancellationException
@@ -66,10 +66,12 @@ class AbsenActivity : AppCompatActivity() {
     lateinit var strImageName: String
     lateinit var absenViewModel: AbsenViewModel
     lateinit var progressDialog: ProgressDialog
+    private lateinit var binding: ActivityAbsenBinding
     var uriFile : String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_absen)
+        binding = ActivityAbsenBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         //get uri foto from camera page
         setInitLayout()
         setCurrentLocation()
@@ -99,7 +101,7 @@ class AbsenActivity : AppCompatActivity() {
                             geocoder.getFromLocation(strCurrentLatitude, strCurrentLongitude, 1)
                         if (addressList != null && addressList.size > 0) {
                             strCurrentLocation = addressList[0].getAddressLine(0)
-                            inputLokasi.setText(strCurrentLocation)
+                            binding.inputLokasi.setText(strCurrentLocation)
                         }
                     } catch (e: IOException) {
                         e.printStackTrace()
@@ -161,10 +163,10 @@ class AbsenActivity : AppCompatActivity() {
         strTitle = intent.extras?.getString(DATA_TITLE).toString()
 
         if (strTitle != null) {
-            tvTitle.text = strTitle
+            binding.tvTitle.text = strTitle
         }
 
-        setSupportActionBar(toolbar)
+        setSupportActionBar(binding.toolbar)
         if (supportActionBar != null) {
             supportActionBar?.setDisplayHomeAsUpEnabled(true)
             supportActionBar?.setDisplayShowTitleEnabled(false)
@@ -175,7 +177,7 @@ class AbsenActivity : AppCompatActivity() {
                 .getInstance(this.application) as ViewModelProvider.Factory)
         ).get(AbsenViewModel::class.java)
 
-        inputTanggal.setOnClickListener {
+        binding.inputTanggal.setOnClickListener {
             val tanggalAbsen = Calendar.getInstance()
             val date =
                 OnDateSetListener { _: DatePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
@@ -185,7 +187,7 @@ class AbsenActivity : AppCompatActivity() {
                     timestamp = tanggalAbsen.timeInMillis
                     val strFormatDefault = "dd MMMM yyyy HH:mm"
                     val simpleDateFormat = SimpleDateFormat(strFormatDefault, Locale.getDefault())
-                    inputTanggal.setText(simpleDateFormat.format(tanggalAbsen.time))
+                    binding.inputTanggal.setText(simpleDateFormat.format(tanggalAbsen.time))
                 }
             DatePickerDialog(
                 this@AbsenActivity, date,
@@ -195,7 +197,7 @@ class AbsenActivity : AppCompatActivity() {
             ).show()
         }
 
-        layoutImage.setOnClickListener {
+        binding.layoutImage.setOnClickListener {
             val move = Intent(this.application, CameraPrev::class.java)
             startActivityForResult(move, REQUEST_CODE)
         }
@@ -262,11 +264,11 @@ class AbsenActivity : AppCompatActivity() {
 
 
     private fun setUploadData() {
-        btnAbsen.setOnClickListener {
-            val strNama = inputNama.text.toString()
-            val strTanggal = inputTanggal.text.toString()
-            val strKeterangan = inputKeterangan.text.toString()
-            val jumlahspp = inputjumlahspp.text.toString().toInt()
+        binding.btnAbsen.setOnClickListener {
+            val strNama = binding.inputNama.text.toString()
+            val strTanggal = binding.inputTanggal.text.toString()
+            val strKeterangan = binding.inputKeterangan.text.toString()
+            val jumlahspp = binding.inputjumlahspp.text.toString().toInt()
 //            convertImage(uriFile)
 
             /* Jika ingin mengaktifkan fitur lokasi dan kamera hilangkan comment dibawah */
@@ -340,7 +342,7 @@ class AbsenActivity : AppCompatActivity() {
         if(requestCode == REQUEST_CODE){
             if(resultCode == Activity.RESULT_OK){
                 uriFile = data?.getStringExtra("uri_file")
-                imageSelfie.setImageURI(Uri.parse(uriFile))
+                binding.imageSelfie.setImageURI(Uri.parse(uriFile))
             }
         }
         //result jika lokasi berhasil di enable
@@ -403,7 +405,7 @@ class AbsenActivity : AppCompatActivity() {
                     .load(scaledBitmap)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.ic_photo_camera)
-                    .into(imageSelfie)
+                    .into(binding.imageSelfie)
                 strBase64Photo = bitmapToBase64(scaledBitmap)
             }
         }

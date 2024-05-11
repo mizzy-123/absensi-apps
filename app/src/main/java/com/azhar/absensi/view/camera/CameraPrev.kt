@@ -4,9 +4,12 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.WindowInsets
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.camera.core.CameraSelector
@@ -17,9 +20,9 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.azhar.absensi.R
+import com.azhar.absensi.databinding.ActivityCameraPrevBinding
 import com.azhar.absensi.view.absen.AbsenActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import kotlinx.android.synthetic.main.activity_camera_prev.lay_preview
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -29,14 +32,18 @@ import java.util.jar.Manifest
 
 class CameraPrev : AppCompatActivity() {
 
+    private lateinit var binding: ActivityCameraPrevBinding
     private var imageCapture: ImageCapture? = null
+    private var cameraSelector: CameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
     private lateinit var fileDirectory: File
     private lateinit var cameraExecutorService: ExecutorService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_camera_prev)
+        binding = ActivityCameraPrevBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
+        hideSystemUI()
         if(allPermissionGranted()){
             startCamera()
         }else{
@@ -46,6 +53,14 @@ class CameraPrev : AppCompatActivity() {
         findViewById<FloatingActionButton>(R.id.btn_capture).setOnClickListener {
             takePicture()
         }
+
+        binding.switchCamera.setOnClickListener {
+            cameraSelector =
+                if (cameraSelector == CameraSelector.DEFAULT_BACK_CAMERA) CameraSelector.DEFAULT_FRONT_CAMERA
+                else CameraSelector.DEFAULT_BACK_CAMERA
+            startCamera()
+        }
+
         fileDirectory = getOutputDirectory()
         cameraExecutorService = Executors.newSingleThreadExecutor()
     }
@@ -65,10 +80,9 @@ class CameraPrev : AppCompatActivity() {
             val preview = Preview.Builder()
                 .build()
                 .also {
-                    it.setSurfaceProvider(lay_preview.createSurfaceProvider())
+                    it.setSurfaceProvider(binding.layPreview.createSurfaceProvider())
                 }
             imageCapture = ImageCapture.Builder().build()
-            val cameraSelector = CameraSelector.DEFAULT_FRONT_CAMERA
 
             try{
                 camProvider.unbindAll()
@@ -145,5 +159,18 @@ class CameraPrev : AppCompatActivity() {
             }
         )
 
+    }
+
+    private fun hideSystemUI() {
+        @Suppress("DEPRECATION")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.hide(WindowInsets.Type.statusBars())
+        } else {
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
+        supportActionBar?.hide()
     }
 }
