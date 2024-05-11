@@ -31,6 +31,9 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
+            android:name=".view.spp.MainSppActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.spp.InputSppActivity"
             android:exported="false" />
         <activity
