@@ -31,6 +31,15 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
         <activity
+            android:name=".view.penggajian.PenggajianActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.penggajian.riwayatpenggajian.RiwayatActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.penggajian.penggajianguru.PenggajianGuruActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.camera.CameraPrev"
             android:exported="false" />
         <activity

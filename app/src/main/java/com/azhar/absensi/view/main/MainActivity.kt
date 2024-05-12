@@ -8,6 +8,8 @@ import com.azhar.absensi.R
 import com.azhar.absensi.utils.SessionLogin
 import com.azhar.absensi.view.absen.AbsenActivity
 import com.azhar.absensi.view.history.HistoryActivity
+import com.azhar.absensi.view.penggajian.PenggajianActivity
+import com.azhar.absensi.view.penggajian.penggajianguru.PenggajianGuruActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -28,7 +30,7 @@ class MainActivity : AppCompatActivity() {
 
         cvAbsenMasuk.setOnClickListener {
             strTitle = "Absen Masuk"
-            val intent = Intent(this@MainActivity, AbsenActivity::class.java)
+            val intent = Intent(this@MainActivity, PenggajianActivity::class.java)
             intent.putExtra(AbsenActivity.DATA_TITLE, strTitle)
             startActivity(intent)
         }
