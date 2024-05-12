@@ -132,6 +132,23 @@
                     android:textColor="@color/white"
                     app:cornerRadius="20dp"
                     app:elevation="5dp" />
+                <TextView
+                    android:id="@+id/tvRegis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="10dp"
+                    android:text="Belum punya akun?"
+                    android:textColor="@android:color/holo_red_light"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/prg_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

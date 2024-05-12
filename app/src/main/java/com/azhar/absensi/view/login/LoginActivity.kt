@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -11,6 +12,12 @@ import com.azhar.absensi.R
 import com.azhar.absensi.databinding.ActivityLoginBinding
 import com.azhar.absensi.utils.SessionLogin
 import com.azhar.absensi.view.main.MainActivity
+import com.azhar.absensi.view.register.RegisterActivity
+import com.google.android.material.textfield.TextInputEditText
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.auth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
     lateinit var session: SessionLogin
@@ -18,14 +25,28 @@ class LoginActivity : AppCompatActivity() {
     lateinit var strPassword: String
     private lateinit var binding: ActivityLoginBinding
     var REQ_PERMISSION = 101
+    lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        auth = Firebase.auth
 
-        setPermission()
-        setInitLayout()
+        val usernameTXT = binding.inputNama.text.toString()
+        val passTXT = binding.inputPassword.text.toString()
+        binding.prgBar.visibility = View.GONE
+//        setPermission()
+        binding.btnLogin.setOnClickListener {
+            SignIn(findViewById<TextInputEditText>(R.id.inputNama).text.toString(), findViewById<TextInputEditText>(R.id.inputPassword).text.toString())
+//        Toast.makeText(this, findViewById<TextInputEditText>(R.id.inputNama).text.toString(),Toast.LENGTH_SHORT).show()
+            binding.prgBar.visibility = View.VISIBLE
+        }
+
+        binding.tvRegis.setOnClickListener {
+            startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
+
+        }
     }
 
     private fun setPermission() {
@@ -39,6 +60,36 @@ class LoginActivity : AppCompatActivity() {
             )
         }
     }
+
+    private fun SignIn(username:String, password:String){
+
+        if(username.isNullOrBlank() || password.isNullOrBlank()){
+            Toast.makeText(this, "Maaf, field tidak boleh kosong! ${username} | ${password}", Toast.LENGTH_SHORT).show()
+        }
+
+        auth.signInWithEmailAndPassword(username, password).addOnCompleteListener(this) {
+                task ->
+            if(task.isSuccessful){
+                Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                binding.prgBar.visibility = View.GONE
+            }else if (task.isCanceled){
+                Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
+                binding.prgBar.visibility = View.GONE
+
+            }else{
+                Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
+                binding.prgBar.visibility = View.GONE
+
+            }
+        }
+
+
+
+    }
+
+
+
 
     private fun setInitLayout() {
         session = SessionLogin(applicationContext)

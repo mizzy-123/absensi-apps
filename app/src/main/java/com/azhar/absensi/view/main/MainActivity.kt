@@ -8,25 +8,38 @@ import com.azhar.absensi.databinding.ActivityMainBinding
 import com.azhar.absensi.utils.SessionLogin
 import com.azhar.absensi.view.absen.AbsenActivity
 import com.azhar.absensi.view.history.HistoryActivity
+import com.azhar.absensi.view.login.LoginActivity
 import com.azhar.absensi.view.spp.MainSppActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var strTitle: String
     lateinit var session: SessionLogin
     private lateinit var binding: ActivityMainBinding
-
+    lateinit var auth: FirebaseAuth
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        auth = Firebase.auth
         setInitLayout()
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        if(auth.currentUser != null){
+            setInitLayout()
+        }else{
+            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+        }
+    }
+
     private fun setInitLayout() {
-        session = SessionLogin(this)
-        session.checkLogin()
+
 
         binding.cvAbsenMasuk.setOnClickListener {
             strTitle = "Absen Masuk"

@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "com.azhar.absensi"
-        minSdk 21
+        minSdk 23
         targetSdk 32
         versionCode 1
         versionName "1.0"
@@ -87,6 +87,7 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:33.0.0')
     implementation 'com.google.firebase:firebase-analytics'
     implementation 'com.google.firebase:firebase-firestore'
+    implementation("com.google.firebase:firebase-auth")
 
     // binding
     implementation 'androidx.databinding:viewbinding:8.2.2'
