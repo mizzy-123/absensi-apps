@@ -13,6 +13,7 @@ import com.azhar.absensi.view.spp.MainSppActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.azhar.absensi.view.penggajian.PenggajianActivity
 
 class MainActivity : AppCompatActivity() {
 
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         binding.cvAbsenMasuk.setOnClickListener {
             strTitle = "Absen Masuk"
-            val intent = Intent(this@MainActivity, AbsenActivity::class.java)
+            val intent = Intent(this@MainActivity, PenggajianActivity::class.java)
             intent.putExtra(AbsenActivity.DATA_TITLE, strTitle)
             startActivity(intent)
         }

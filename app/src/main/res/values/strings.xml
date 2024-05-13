@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Aplikasi Manajemen Ahe</string>
+    <string name="nama_guru">Nama Guru</string>
+    <string name="masukan_nama_guru">Masukan Nama Guru</string>
+    <string name="gaji_1">Gaji 1</string>
+    <string name="gaji_2">Gaji 2</string>
+    <string name="simpan">Simpan</string>
 </resources>
