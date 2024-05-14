@@ -33,6 +33,7 @@ class MainSppActivity : AppCompatActivity() {
 
         binding.cvRiwayatSpp.setOnClickListener {
             val intent = Intent(this@MainSppActivity, RiwayatSppActivity::class.java)
+            startActivity(intent)
         }
     }
 }
