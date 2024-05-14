@@ -1,5 +1,7 @@
 package com.azhar.absensi.firebase
 
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
@@ -13,5 +15,13 @@ class Firestore private constructor() {
 
     fun getDatabase(): FirebaseFirestore {
         return db
+    }
+
+    fun getCollection(): CollectionReference {
+        return db.collection("users")
+    }
+
+    fun getDocument(userId: String): DocumentReference {
+        return getCollection().document(userId)
     }
 }
