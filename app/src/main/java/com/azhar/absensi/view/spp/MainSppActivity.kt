@@ -8,17 +8,29 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.azhar.absensi.R
 import com.azhar.absensi.databinding.ActivityMainSppBinding
+import com.azhar.absensi.firebase.Firestore
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
 
 class MainSppActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainSppBinding
+    private lateinit var firestore: Firestore
+    private lateinit var storage: FirebaseStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainSppBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        initComponents()
         setupAction()
+    }
+
+    private fun initComponents(){
+        firestore = Firestore.instance
+        storage = Firebase.storage("gs://gaji-1a496.appspot.com")
     }
 
     private fun setupAction(){
