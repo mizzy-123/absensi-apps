@@ -93,5 +93,7 @@ dependencies {
     // binding
     implementation 'androidx.databinding:viewbinding:8.2.2'
 
+    // Sweet alert
+    implementation 'com.github.f0ris.sweetalert:library:1.6.2'
 
 }

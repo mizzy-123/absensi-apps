@@ -16,21 +16,13 @@ import com.google.firebase.storage.ktx.storage
 class MainSppActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainSppBinding
-    private lateinit var firestore: Firestore
-    private lateinit var storage: FirebaseStorage
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainSppBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        initComponents()
         setupAction()
-    }
-
-    private fun initComponents(){
-        firestore = Firestore.instance
-        storage = Firebase.storage("gs://gaji-1a496.appspot.com")
     }
 
     private fun setupAction(){

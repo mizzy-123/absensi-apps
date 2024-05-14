@@ -3,6 +3,7 @@ package com.azhar.absensi.view.login
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.View
@@ -27,8 +28,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     var REQ_PERMISSION = 101
     lateinit var auth: FirebaseAuth
-    val pref = getSharedPreferences("userInfo", Context.MODE_PRIVATE)
-    val editor = pref.edit()
+    private lateinit var pref: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,6 +37,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         auth = Firebase.auth
 
+        initComponents()
         cekLogin()
 
         val usernameTXT = binding.inputNama.text.toString()
@@ -51,6 +53,11 @@ class LoginActivity : AppCompatActivity() {
             startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
 
         }
+    }
+
+    private fun initComponents(){
+        pref = getSharedPreferences("userInfo", Context.MODE_PRIVATE)
+        editor = pref.edit()
     }
 
     private fun cekLogin(){
