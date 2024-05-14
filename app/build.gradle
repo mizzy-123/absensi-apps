@@ -91,4 +91,14 @@ dependencies {
 
     // binding
     implementation 'androidx.databinding:viewbinding:8.2.2'
+
+    //datastore preferences
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
+
+    // optional - RxJava2 support
+    implementation("androidx.datastore:datastore-preferences-rxjava2:1.1.1")
+
+    // optional - RxJava3 support
+    implementation("androidx.datastore:datastore-preferences-rxjava3:1.1.1")
+
 }

@@ -1,6 +1,7 @@
 package com.azhar.absensi.view.login
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -8,6 +9,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.azhar.absensi.R
 import com.azhar.absensi.databinding.ActivityLoginBinding
 import com.azhar.absensi.utils.SessionLogin
@@ -26,6 +30,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var binding: ActivityLoginBinding
     var REQ_PERMISSION = 101
     lateinit var auth: FirebaseAuth
+    val pref = getSharedPreferences("userInfo", Context.MODE_PRIVATE)
+    val editor = pref.edit()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +42,6 @@ class LoginActivity : AppCompatActivity() {
         val usernameTXT = binding.inputNama.text.toString()
         val passTXT = binding.inputPassword.text.toString()
         binding.prgBar.visibility = View.GONE
-//        setPermission()
         binding.btnLogin.setOnClickListener {
             SignIn(findViewById<TextInputEditText>(R.id.inputNama).text.toString(), findViewById<TextInputEditText>(R.id.inputPassword).text.toString())
 //        Toast.makeText(this, findViewById<TextInputEditText>(R.id.inputNama).text.toString(),Toast.LENGTH_SHORT).show()
@@ -73,6 +78,15 @@ class LoginActivity : AppCompatActivity() {
                 Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                 binding.prgBar.visibility = View.GONE
+                val currUser = auth.currentUser
+
+                //save to preferences
+                editor.putString("uid", currUser!!.uid )
+                editor.apply()
+
+                //set all permission
+                setPermission()
+
             }else if (task.isCanceled){
                 Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
                 binding.prgBar.visibility = View.GONE

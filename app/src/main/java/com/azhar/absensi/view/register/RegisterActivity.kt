@@ -65,9 +65,13 @@ class RegisterActivity : AppCompatActivity() {
                  }else if (task.isCanceled){
                      Toast.makeText(this, "Gagal SignUp", Toast.LENGTH_SHORT).show()
                      binding.prgBar.visibility = View.GONE
+                     binding.btnRegis.visibility = View.VISIBLE
+                     binding.tvLogin.visibility = View.VISIBLE
                  }else{
                      Toast.makeText(this, "Gagal SignUp", Toast.LENGTH_SHORT).show()
                      binding.prgBar.visibility = View.GONE
+                     binding.btnRegis.visibility = View.VISIBLE
+                     binding.tvLogin.visibility = View.VISIBLE
 
                  }
              }
