@@ -1,5 +1,6 @@
 package com.azhar.absensi.firebase
 
+import com.azhar.absensi.model.Penggajian
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,5 +24,18 @@ class Firestore private constructor() {
 
     fun getDocument(userId: String): DocumentReference {
         return getCollection().document(userId)
+    }
+
+    fun getPenggajian(userId: String, onSuccess: (List<Penggajian>) -> Unit, onFailure: (Exception) -> Unit) {
+        getDocument(userId).collection("gaji").get()
+            .addOnSuccessListener { querySnapshot ->
+                val penggajianList = querySnapshot.documents.mapNotNull { document ->
+                    document.toObject(Penggajian::class.java)
+                }
+                onSuccess(penggajianList)
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
     }
 }
