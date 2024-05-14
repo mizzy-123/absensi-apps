@@ -91,4 +91,6 @@ dependencies {
 
     // binding
     implementation 'androidx.databinding:viewbinding:8.2.2'
+
+
 }
