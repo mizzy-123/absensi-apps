@@ -9,9 +9,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.azhar.absensi.R
 import com.azhar.absensi.databinding.ActivityLoginBinding
 import com.azhar.absensi.utils.SessionLogin
@@ -39,6 +36,8 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         auth = Firebase.auth
 
+        cekLogin()
+
         val usernameTXT = binding.inputNama.text.toString()
         val passTXT = binding.inputPassword.text.toString()
         binding.prgBar.visibility = View.GONE
@@ -51,6 +50,14 @@ class LoginActivity : AppCompatActivity() {
         binding.tvRegis.setOnClickListener {
             startActivity(Intent(this@LoginActivity, RegisterActivity::class.java))
 
+        }
+    }
+
+    private fun cekLogin(){
+        val uid = pref.getString("uid", null)
+        if (uid != null){
+            val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -76,7 +83,6 @@ class LoginActivity : AppCompatActivity() {
                 task ->
             if(task.isSuccessful){
                 Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                 binding.prgBar.visibility = View.GONE
                 val currUser = auth.currentUser
 
@@ -86,6 +92,8 @@ class LoginActivity : AppCompatActivity() {
 
                 //set all permission
                 setPermission()
+
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
 
             }else if (task.isCanceled){
                 Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
