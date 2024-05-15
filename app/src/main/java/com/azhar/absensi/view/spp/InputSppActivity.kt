@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -188,6 +189,19 @@ class InputSppActivity : AppCompatActivity() {
         }
 
         binding.inputjumlahspp.addTextChangedListener(RupiahTextWatcher(binding.inputjumlahspp))
+
+        binding.btnGallery.setOnClickListener {
+            launcherGallery.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        }
+    }
+
+    private val launcherGallery = registerForActivityResult(
+        ActivityResultContracts.PickVisualMedia()
+    ){ uri: Uri? ->
+        if (uri != null){
+            currentImage = uri
+            binding.imageSelfie.setImageURI(uri)
+        }
     }
 
     private val launcherIntentCameraX = registerForActivityResult(

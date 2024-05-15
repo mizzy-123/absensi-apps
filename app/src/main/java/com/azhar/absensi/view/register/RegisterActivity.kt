@@ -46,40 +46,40 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
-    fun SignUp(username:String, password:String, confPass:String){
+    fun SignUp(username:String, password:String, confPass:String) {
 
-        if(username.isNullOrBlank() || password.isNullOrBlank() || confPass.isNullOrBlank()){
+        if (username.isNullOrBlank() || password.isNullOrBlank() || confPass.isNullOrBlank()) {
             Toast.makeText(this, "Maaf, field tidak boleh kosong!", Toast.LENGTH_SHORT).show()
-         }else if(password != confPass){
-             Toast.makeText(this, "Kesalahan, Password tidak sama", Toast.LENGTH_SHORT).show()
-         }
-
-         try {
-             auth.createUserWithEmailAndPassword(username, password).addOnCompleteListener(this) {
-                     task ->
-                 if(task.isSuccessful){
-                     Toast.makeText(this, "Berhasil SignUp", Toast.LENGTH_SHORT).show()
-                     val user = auth.currentUser
-                     startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
+        } else if (password != confPass) {
+            Toast.makeText(this, "Kesalahan, Password tidak sama", Toast.LENGTH_SHORT).show()
+        } else {
+            try {
+                auth.createUserWithEmailAndPassword(username, password)
+                    .addOnCompleteListener(this) { task ->
+                        if (task.isSuccessful) {
+                            Toast.makeText(this, "Berhasil SignUp", Toast.LENGTH_SHORT).show()
+                            val user = auth.currentUser
+                            startActivity(Intent(this@RegisterActivity, LoginActivity::class.java))
 //                 finish()
-                 }else if (task.isCanceled){
-                     Toast.makeText(this, "Gagal SignUp", Toast.LENGTH_SHORT).show()
-                     binding.prgBar.visibility = View.GONE
-                     binding.btnRegis.visibility = View.VISIBLE
-                     binding.tvLogin.visibility = View.VISIBLE
-                 }else{
-                     Toast.makeText(this, "Gagal SignUp", Toast.LENGTH_SHORT).show()
-                     binding.prgBar.visibility = View.GONE
-                     binding.btnRegis.visibility = View.VISIBLE
-                     binding.tvLogin.visibility = View.VISIBLE
+                        } else if (task.isCanceled) {
+                            Toast.makeText(this, "Gagal SignUp", Toast.LENGTH_SHORT).show()
+                            binding.prgBar.visibility = View.GONE
+                            binding.btnRegis.visibility = View.VISIBLE
+                            binding.tvLogin.visibility = View.VISIBLE
+                        } else {
+                            Toast.makeText(this, "Gagal SignUp", Toast.LENGTH_SHORT).show()
+                            binding.prgBar.visibility = View.GONE
+                            binding.btnRegis.visibility = View.VISIBLE
+                            binding.tvLogin.visibility = View.VISIBLE
 
-                 }
-             }
-         }catch (e:Exception){
-             Toast.makeText(this, "${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+            } catch (e: Exception) {
+                Toast.makeText(this, "${e.message}", Toast.LENGTH_SHORT).show()
 
-         }
+            }
 
+        }
     }
 
 }

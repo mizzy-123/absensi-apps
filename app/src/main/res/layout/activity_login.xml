@@ -64,7 +64,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:hint="Masukan Nama"
+                        android:hint="Masukan Email"
                         android:imeOptions="actionNext"
                         android:inputType="text"
                         android:maxLines="1"

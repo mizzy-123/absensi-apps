@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.WindowInsets
 import android.view.WindowManager
@@ -69,7 +70,7 @@ class CameraPrev : AppCompatActivity() {
         private const val TAG = "CameraXAHE"
         private const val FILENAME_FORMAT = "dd-MM-yyyy-HH-mm-ss-SSS"
         private const val REQUEST_CODE_PERMISSION = 20
-        private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA)
+        private val REQUIRED_PERMISSIONS = arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
     }
 
@@ -131,8 +132,9 @@ class CameraPrev : AppCompatActivity() {
 
     fun takePicture() {
         val imgCap = imageCapture ?: return
+        val externalStorage = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
         val fileFoto = File(
-            fileDirectory,
+            externalStorage,
             SimpleDateFormat(FILENAME_FORMAT, Locale.ENGLISH).format(System.currentTimeMillis()) + ".jpg"
         )
         val outputOptions = ImageCapture.OutputFileOptions.Builder(fileFoto).build()
@@ -150,6 +152,9 @@ class CameraPrev : AppCompatActivity() {
                     finish()
                     Toast.makeText(baseContext, msg, Toast.LENGTH_LONG).show()
                     Log.d(TAG, msg)
+
+                    // Scan file to make it visible in gallery apps
+                    sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uriFile))
                 }
 
                 override fun onError(exception: ImageCaptureException) {

@@ -1,6 +1,8 @@
 package com.azhar.absensi.view.main
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -22,11 +24,15 @@ class MainActivity : AppCompatActivity() {
     lateinit var session: SessionLogin
     private lateinit var binding: ActivityMainBinding
     lateinit var auth: FirebaseAuth
+    private lateinit var pref: SharedPreferences
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         auth = Firebase.auth
+
+        initComponents()
         setInitLayout()
     }
 
@@ -38,6 +44,10 @@ class MainActivity : AppCompatActivity() {
         }else{
             startActivity(Intent(this@MainActivity, LoginActivity::class.java))
         }
+    }
+
+    private fun initComponents(){
+        pref = getSharedPreferences("userInfo", Context.MODE_PRIVATE)
     }
 
     private fun setInitLayout() {
@@ -74,7 +84,12 @@ class MainActivity : AppCompatActivity() {
             builder.setCancelable(true)
             builder.setNegativeButton("Batal") { dialog, which -> dialog.cancel() }
             builder.setPositiveButton("Ya") { dialog, which ->
-                session.logoutUser()
+//                session.logoutUser()
+                FirebaseAuth.getInstance().signOut()
+
+                val editor = pref.edit()
+                editor.putString("uid", null)
+                editor.apply()
                 finishAffinity()
             }
             val alertDialog = builder.create()
