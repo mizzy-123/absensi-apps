@@ -104,14 +104,12 @@ class InputSppActivity : AppCompatActivity() {
                 jatuh_tempo = jatuhTempo,
                 tgl_bayar = tanggalBayar,
                 jenis_les = jenis_les,
-                nominal = nominal
+                nominal = nominal,
+                timestamp = System.currentTimeMillis()
             )).addOnSuccessListener {
                 pDialog.dismiss()
-                Toast.makeText(this, "Data saved", Toast.LENGTH_SHORT).show()
-                binding.edNamaGuru.setText("")
-                binding.edNamaGuru.setText("")
-                binding.edLes.setText("")
-                binding.inputjumlahspp.setText("")
+                Toast.makeText(this, "Berhasil di simpan", Toast.LENGTH_LONG).show()
+                inputReset()
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Gagal di simpan", Toast.LENGTH_SHORT).show()
@@ -119,7 +117,22 @@ class InputSppActivity : AppCompatActivity() {
             }
     }
 
+    private fun inputReset() {
+        binding.edNamaMurid.setText("")
+        binding.edNamaGuru.setText("")
+        binding.edLes.setText("")
+        binding.inputjumlahspp.setText("")
+        binding.edJatuhTempo.setText("")
+        binding.edTanggalBayar.setText("")
+        binding.imageSelfie.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_photo_camera))
+        currentImage = null
+    }
+
     private fun setupAction(){
+
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
 
         binding.edJatuhTempo.setOnClickListener {
             val tanggalAbsen = Calendar.getInstance()

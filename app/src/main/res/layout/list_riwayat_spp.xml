@@ -49,7 +49,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:text="Riwayat Masuk"
+                android:text="Riwayat SPP"
                 android:textColor="@color/black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -83,7 +83,7 @@
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/tvNama"
+                    android:id="@+id/tv_nama_murid"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="7"
@@ -115,7 +115,7 @@
                     android:textSize="12sp" />
 
                 <TextView
-                    android:id="@+id/tvLokasi"
+                    android:id="@+id/tv_nama_guru"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="7"

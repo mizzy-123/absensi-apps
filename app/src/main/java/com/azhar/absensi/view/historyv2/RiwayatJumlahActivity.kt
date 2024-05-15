@@ -1,9 +1,8 @@
-package com.azhar.absensi.view.spp
+package com.azhar.absensi.view.historyv2
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,25 +10,25 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.azhar.absensi.R
-import com.azhar.absensi.databinding.ActivityRiwayatSppBinding
+import com.azhar.absensi.databinding.ActivityRiwayatJumlahBinding
 import com.azhar.absensi.firebase.Firestore
 import com.azhar.absensi.model.DataSpp
 import com.google.firebase.firestore.Query
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
+import java.text.SimpleDateFormat
+import java.util.Locale
 
-class RiwayatSppActivity : AppCompatActivity() {
+class RiwayatJumlahActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityRiwayatSppBinding
-    private lateinit var cardListSppAdapter: CardListSppAdapter
+    private lateinit var binding: ActivityRiwayatJumlahBinding
     private lateinit var listSpp: ArrayList<DataSpp>
+    private lateinit var riwayatJumlahAdapter: RiwayatJumlahAdapter
     private lateinit var firestore: Firestore
     private lateinit var pref: SharedPreferences
     var uid: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityRiwayatSppBinding.inflate(layoutInflater)
+        binding = ActivityRiwayatJumlahBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         initComponents()
@@ -46,10 +45,12 @@ class RiwayatSppActivity : AppCompatActivity() {
     private fun setAction(){
         firestore.getDocument(uid!!)
             .collection("spp")
-            .orderBy("timestamp", Query.Direction.DESCENDING)
+            .orderBy("tgl_bayar", Query.Direction.DESCENDING)
             .get()
-            .addOnSuccessListener {  result ->
+            .addOnSuccessListener { result ->
                 listSpp.clear()
+                val temp = arrayListOf<String>()
+                val newListSpp = ArrayList<DataSpp>()
                 for (document in result){
                     val getdataSpp = document.data
 
@@ -63,13 +64,40 @@ class RiwayatSppActivity : AppCompatActivity() {
                         timestamp = getdataSpp["timestamp"].toString().toLong(),
                         jenis_les = getdataSpp["jenis_les"].toString()
                     )
-                    listSpp.add(dataSpp)
-                    showRecyclerCardList()
+
+                    val dateFormat = SimpleDateFormat("MMMM yyyy", Locale.getDefault())
+                    val resultFormat = dateFormat.format(dataSpp.tgl_bayar)
+
+                    var cek: Boolean = false
+
+                    if (newListSpp.isEmpty()){
+                        newListSpp.add(dataSpp)
+                        temp.add(resultFormat)
+                    } else {
+                        for (y in temp){
+                            if (resultFormat == y){
+                                cek = true
+                                newListSpp.forEachIndexed { index, value ->
+                                    if (dateFormat.format(value.tgl_bayar) == resultFormat){
+                                        newListSpp[index].nominal += dataSpp.nominal
+                                    }
+                                }
+                                break
+                            }
+                        }
+
+                        if (!cek){
+                            newListSpp.add(dataSpp)
+                            temp.add(resultFormat)
+                        }
+                    }
                 }
+
+                listSpp.addAll(newListSpp)
+                showRecycleList()
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Oops something wrong..", Toast.LENGTH_SHORT).show()
-                binding.tvNotFound.visibility = View.VISIBLE
             }
 
         binding.toolbar.setNavigationOnClickListener {
@@ -77,15 +105,9 @@ class RiwayatSppActivity : AppCompatActivity() {
         }
     }
 
-    private fun showRecyclerCardList(){
+    private fun showRecycleList(){
         binding.rvHistory.layoutManager = LinearLayoutManager(this)
-        cardListSppAdapter = CardListSppAdapter(listSpp)
-        binding.rvHistory.adapter = cardListSppAdapter
-
-        if (listSpp.isEmpty()){
-            binding.tvNotFound.visibility = View.VISIBLE
-        } else {
-            binding.tvNotFound.visibility = View.GONE
-        }
+        riwayatJumlahAdapter = RiwayatJumlahAdapter(listSpp)
+        binding.rvHistory.adapter = riwayatJumlahAdapter
     }
 }

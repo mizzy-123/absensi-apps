@@ -8,6 +8,7 @@ import com.azhar.absensi.databinding.ActivityMainBinding
 import com.azhar.absensi.utils.SessionLogin
 import com.azhar.absensi.view.absen.AbsenActivity
 import com.azhar.absensi.view.history.HistoryActivity
+import com.azhar.absensi.view.historyv2.RiwayatJumlahActivity
 import com.azhar.absensi.view.login.LoginActivity
 import com.azhar.absensi.view.spp.MainSppActivity
 import com.google.firebase.auth.FirebaseAuth
@@ -54,15 +55,16 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        binding.cvPerizinan.setOnClickListener {
-            strTitle = "Izin"
-            val intent = Intent(this@MainActivity, AbsenActivity::class.java)
-            intent.putExtra(AbsenActivity.DATA_TITLE, strTitle)
-            startActivity(intent)
-        }
+        /* Jika tidak digunakan bisa dihapus -nt:manifestas_tech */
+//        binding.cvPerizinan.setOnClickListener {
+//            strTitle = "Izin"
+//            val intent = Intent(this@MainActivity, AbsenActivity::class.java)
+//            intent.putExtra(AbsenActivity.DATA_TITLE, strTitle)
+//            startActivity(intent)
+//        }
 
         binding.cvHistory.setOnClickListener {
-            val intent = Intent(this@MainActivity, HistoryActivity::class.java)
+            val intent = Intent(this@MainActivity, RiwayatJumlahActivity::class.java)
             startActivity(intent)
         }
 

@@ -28,7 +28,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="true"
-                    android:text="Riwayat Spp"
+                    android:text="Riwayat Jumlah"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold" />
@@ -53,7 +53,7 @@
                 android:id="@+id/rvHistory"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                tools:listitem="@layout/list_riwayat_spp"/>
+                tools:listitem="@layout/list_history_spp"/>
 
         </LinearLayout>
 
