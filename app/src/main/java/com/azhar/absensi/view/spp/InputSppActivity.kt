@@ -24,6 +24,8 @@ import com.azhar.absensi.firebase.Firestore
 import com.azhar.absensi.model.DataSpp
 import com.azhar.absensi.utils.uriToByteArray
 import com.azhar.absensi.view.camera.CameraPrev
+import com.azhar.absensi.view.penggajian.penggajianguru.ClearValue
+import com.azhar.absensi.view.penggajian.penggajianguru.RupiahTextWatcher
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.ktx.storage
@@ -93,7 +95,7 @@ class InputSppActivity : AppCompatActivity() {
         val nama_murid = binding.edNamaMurid.text.toString()
         val nama_guru = binding.edNamaGuru.text.toString()
         val jenis_les = binding.edLes.text.toString()
-        val nominal = binding.inputjumlahspp.text.toString().toInt()
+        val nominal = ClearValue.hapus(binding.inputjumlahspp.text.toString()).toInt()
         firestore
             .getDocument(uid!!)
             .collection("spp")
@@ -184,6 +186,8 @@ class InputSppActivity : AppCompatActivity() {
                 uploadImageToFirebasStorage(currentImage!!)
             }
         }
+
+        binding.inputjumlahspp.addTextChangedListener(RupiahTextWatcher(binding.inputjumlahspp))
     }
 
     private val launcherIntentCameraX = registerForActivityResult(

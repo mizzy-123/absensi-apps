@@ -64,6 +64,7 @@ class LoginActivity : AppCompatActivity() {
         val uid = pref.getString("uid", null)
         if (uid != null){
             val intent = Intent(this@LoginActivity, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
     }
@@ -100,7 +101,9 @@ class LoginActivity : AppCompatActivity() {
                 //set all permission
                 setPermission()
 
-                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
 
             }else if (task.isCanceled){
                 Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
