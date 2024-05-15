@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.azhar.absensi.databinding.ListRiwayatSppBinding
 import com.azhar.absensi.model.DataSpp
+import com.azhar.absensi.utils.formatToRupiah
 import com.azhar.absensi.utils.stampToSimpleDate
 import com.bumptech.glide.Glide
 
@@ -33,7 +34,7 @@ class CardListSppAdapter(private val listSpp: ArrayList<DataSpp>) :
             view.tvJatuhTempo.text = stampToSimpleDate(dataSpp.jatuh_tempo)
             view.tvTanggalBayar.text = stampToSimpleDate(dataSpp.tgl_bayar)
             view.tvJenisLes.text = dataSpp.jenis_les
-            view.tvjumlahspp.text = dataSpp.nominal.toString()
+            view.tvjumlahspp.text = formatToRupiah(dataSpp.nominal)
         }
     }
 }

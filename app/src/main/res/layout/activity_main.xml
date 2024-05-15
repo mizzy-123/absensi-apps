@@ -174,60 +174,61 @@
 
             </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cvPerizinan"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_margin="10dp"
-                app:cardCornerRadius="20dp"
-                app:cardElevation="5dp"
-                app:cardUseCompatPadding="true">
+            <!-- Jika tidak digunakan bisa dihapus: -nt:manifestas_tech -->
+<!--            <androidx.cardview.widget.CardView-->
+<!--                android:id="@+id/cvPerizinan"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="150dp"-->
+<!--                android:layout_margin="10dp"-->
+<!--                app:cardCornerRadius="20dp"-->
+<!--                app:cardElevation="5dp"-->
+<!--                app:cardUseCompatPadding="true">-->
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:elevation="1dp"
-                    android:orientation="horizontal">
+<!--                <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:elevation="1dp"-->
+<!--                    android:orientation="horizontal">-->
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="20dp"
-                        android:layout_weight="1"
-                        android:text="Absensi"
-                        android:textColor="@color/white"
-                        android:textSize="24sp"
-                        android:textStyle="bold" />
+<!--                    <androidx.appcompat.widget.AppCompatTextView-->
+<!--                        android:layout_width="0dp"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:layout_gravity="center"-->
+<!--                        android:layout_marginStart="20dp"-->
+<!--                        android:layout_weight="1"-->
+<!--                        android:text="Absensi"-->
+<!--                        android:textColor="@color/white"-->
+<!--                        android:textSize="24sp"-->
+<!--                        android:textStyle="bold" />-->
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
-                        android:layout_gravity="center|end"
-                        android:layout_marginEnd="12dp"
-                        android:background="@drawable/bg_circle_radius"
-                        android:padding="10dp"
-                        android:src="@drawable/ic_arrow"
-                        app:tint="@color/black" />
+<!--                    <androidx.appcompat.widget.AppCompatImageView-->
+<!--                        android:layout_width="40dp"-->
+<!--                        android:layout_height="40dp"-->
+<!--                        android:layout_gravity="center|end"-->
+<!--                        android:layout_marginEnd="12dp"-->
+<!--                        android:background="@drawable/bg_circle_radius"-->
+<!--                        android:padding="10dp"-->
+<!--                        android:src="@drawable/ic_arrow"-->
+<!--                        app:tint="@color/black" />-->
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
+<!--                </androidx.appcompat.widget.LinearLayoutCompat>-->
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginTop="-20dp"
-                    android:layout_marginBottom="-30dp"
-                    android:adjustViewBounds="true"
-                    android:scaleType="fitXY"
-                    android:src="@drawable/ic_izin" />
+<!--                <androidx.appcompat.widget.AppCompatImageView-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:layout_marginTop="-20dp"-->
+<!--                    android:layout_marginBottom="-30dp"-->
+<!--                    android:adjustViewBounds="true"-->
+<!--                    android:scaleType="fitXY"-->
+<!--                    android:src="@drawable/ic_izin" />-->
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@drawable/bg_overlay"
-                    android:backgroundTint="@android:color/holo_blue_dark" />
+<!--                <androidx.appcompat.widget.LinearLayoutCompat-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="match_parent"-->
+<!--                    android:background="@drawable/bg_overlay"-->
+<!--                    android:backgroundTint="@android:color/holo_blue_dark" />-->
 
-            </androidx.cardview.widget.CardView>
+<!--            </androidx.cardview.widget.CardView>-->
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cvHistory"

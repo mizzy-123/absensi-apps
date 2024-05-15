@@ -7,6 +7,6 @@ class DataSpp(
     val jatuh_tempo: Long,
     val tgl_bayar: Long,
     val jenis_les: String,
-    val nominal: Int,
+    var nominal: Int,
     val timestamp: Long
 )

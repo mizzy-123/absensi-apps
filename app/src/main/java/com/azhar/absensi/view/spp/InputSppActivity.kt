@@ -130,6 +130,10 @@ class InputSppActivity : AppCompatActivity() {
 
     private fun setupAction(){
 
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
         binding.edJatuhTempo.setOnClickListener {
             val tanggalAbsen = Calendar.getInstance()
             val date =

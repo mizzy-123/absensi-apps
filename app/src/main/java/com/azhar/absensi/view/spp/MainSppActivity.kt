@@ -35,5 +35,9 @@ class MainSppActivity : AppCompatActivity() {
             val intent = Intent(this@MainSppActivity, RiwayatSppActivity::class.java)
             startActivity(intent)
         }
+
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
     }
 }
