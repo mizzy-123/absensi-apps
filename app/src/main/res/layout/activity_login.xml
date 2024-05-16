@@ -11,6 +11,7 @@
         android:layout_height="match_parent">
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/l_welcome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
@@ -36,6 +37,7 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <androidx.core.widget.NestedScrollView
+            android:layout_below="@id/l_welcome"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true">
