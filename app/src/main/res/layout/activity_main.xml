@@ -251,7 +251,7 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="20dp"
                         android:layout_weight="1"
-                        android:text="Riwayat Kegiatan"
+                        android:text="Riwayat Jumlah SPP"
                         android:textColor="@color/white"
                         android:textSize="24sp"
                         android:textStyle="bold" />
