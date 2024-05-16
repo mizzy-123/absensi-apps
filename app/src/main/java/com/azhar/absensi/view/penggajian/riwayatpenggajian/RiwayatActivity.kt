@@ -37,6 +37,10 @@ class RiwayatActivity : AppCompatActivity() {
             adapter = riwayatAdapter
         }
 
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
         penggajianViewModel.penggajianList.observe(this) { penggajianList ->
             riwayatAdapter.updateData(penggajianList)
         }

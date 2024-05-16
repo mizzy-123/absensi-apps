@@ -22,9 +22,11 @@ class PenggajianGuruViewModel(private val firestore: Firestore) : ViewModel() {
         firestore.getDocument(userId).collection("gaji").add(penggajianData)
             .addOnSuccessListener {
                 _uploadState.value = Result.success(Unit)
+
             }
             .addOnFailureListener { exception ->
                 _uploadState.value = Result.failure(exception)
+
             }
     }
 

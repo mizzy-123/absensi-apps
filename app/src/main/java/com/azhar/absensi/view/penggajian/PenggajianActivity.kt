@@ -19,6 +19,10 @@ class PenggajianActivity : AppCompatActivity() {
         setContentView(binding.root)
         val anim = AnimationUtils.loadAnimation(this, R.anim.btn_click)
 
+        binding.toolbar.setNavigationOnClickListener {
+            finish()
+        }
+
         binding.cvPenggajianguru.setOnClickListener {
             it.startAnimation(anim)
             startActivity(Intent(this@PenggajianActivity,PenggajianGuruActivity::class.java))
