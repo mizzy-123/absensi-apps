@@ -27,9 +27,12 @@ class PenggajianGuruViewModel(private val firestore: Firestore) : ViewModel() {
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> = _isLoading
 
+    private val _infoMessage = MutableLiveData<String>()
+    val infoMessage: LiveData<String> = _infoMessage
+
     private val handler = Handler(Looper.getMainLooper())
     private var searchRunnable: Runnable? = null
-    private val searchDelay = 500L // 500 milliseconds delay
+    private val searchDelay = 600L // 500 milliseconds delay
 
     fun uploadPenggajian(userId: String, penggajianData: Map<String, Any>) {
         firestore.getDocument(userId).collection("gaji").add(penggajianData)
@@ -57,10 +60,16 @@ class PenggajianGuruViewModel(private val firestore: Firestore) : ViewModel() {
         )
     }
 
-    fun setSearchQuery(query: String,userId: String) {
+    fun setSearchQuery(query: String, userId: String) {
         searchRunnable?.let { handler.removeCallbacks(it) }
-        searchRunnable = Runnable { searchPenggajian(query,userId) }
-        handler.postDelayed(searchRunnable!!, searchDelay)
+
+        if (query.isEmpty()) {
+            _searchResults.value = emptyList()
+            _isLoading.value = false
+        } else if (query.length > 1) {
+            searchRunnable = Runnable { searchPenggajian(query, userId) }
+            handler.postDelayed(searchRunnable!!, searchDelay)
+        }
     }
 
     private fun searchPenggajian(query: String,userId: String) {
@@ -68,6 +77,9 @@ class PenggajianGuruViewModel(private val firestore: Firestore) : ViewModel() {
         firestore.searchPenggajianByNamaGuru(query,userId,
             onSuccess = { penggajianList ->
                 _isLoading.value=false
+                if (penggajianList.isEmpty()) {
+                    _infoMessage.value = "Mohon maaf, data yang anda cari tidak ada"
+                }
                 _searchResults.value = penggajianList
                 Log.d("SEARCH", "${_searchResults.value}")
             },

@@ -95,4 +95,7 @@ dependencies {
 
     // Sweet alert
     implementation 'com.github.f0ris.sweetalert:library:1.6.2'
+
+    //swiperefresh
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-alpha01")
 }

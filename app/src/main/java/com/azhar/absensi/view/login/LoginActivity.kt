@@ -85,37 +85,38 @@ class LoginActivity : AppCompatActivity() {
 
         if(username.isNullOrBlank() || password.isNullOrBlank()){
             Toast.makeText(this, "Maaf, field tidak boleh kosong! ${username} | ${password}", Toast.LENGTH_SHORT).show()
+        }else {
+
+            auth.signInWithEmailAndPassword(username, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show()
+                        binding.prgBar.visibility = View.GONE
+                        val currUser = auth.currentUser
+
+                        //save to preferences
+                        editor.putString("uid", currUser!!.uid)
+                        editor.apply()
+
+                        //set all permission
+                        setPermission()
+
+                        val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                        intent.flags =
+                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+
+                    } else if (task.isCanceled) {
+                        Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
+                        binding.prgBar.visibility = View.GONE
+
+                    } else {
+                        Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
+                        binding.prgBar.visibility = View.GONE
+
+                    }
+                }
         }
-
-        auth.signInWithEmailAndPassword(username, password).addOnCompleteListener(this) {
-                task ->
-            if(task.isSuccessful){
-                Toast.makeText(this, "Welcome!", Toast.LENGTH_SHORT).show()
-                binding.prgBar.visibility = View.GONE
-                val currUser = auth.currentUser
-
-                //save to preferences
-                editor.putString("uid", currUser!!.uid )
-                editor.apply()
-
-                //set all permission
-                setPermission()
-
-                val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-
-            }else if (task.isCanceled){
-                Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
-                binding.prgBar.visibility = View.GONE
-
-            }else{
-                Toast.makeText(this, "Failed SignIn!", Toast.LENGTH_SHORT).show()
-                binding.prgBar.visibility = View.GONE
-
-            }
-        }
-
 
 
     }

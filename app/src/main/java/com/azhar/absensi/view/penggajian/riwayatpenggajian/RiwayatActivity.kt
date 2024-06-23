@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.View
-import android.widget.SearchView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +19,7 @@ class RiwayatActivity : AppCompatActivity() {
     private lateinit var penggajianViewModel: PenggajianGuruViewModel
     private lateinit var pref: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private var uid: String = ""
     private fun initComponents() {
         pref = getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         editor = pref.edit()
@@ -47,18 +46,21 @@ class RiwayatActivity : AppCompatActivity() {
         }
 
         penggajianViewModel.error.observe(this) { exception ->
-            Toast.makeText(this, "Error: ${exception.message}", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "Error: ${exception.message}", Toast.LENGTH_SHORT).show()
+        }
+        penggajianViewModel.infoMessage.observe(this) { msg ->
+            Toast.makeText(this, "$msg", Toast.LENGTH_SHORT).show()
         }
 
-        penggajianViewModel.isLoading.observe(this){
+        penggajianViewModel.isLoading.observe(this) {
             showLoading(it)
         }
-        val uid = pref.getString("uid", null)
-        penggajianViewModel.fetchPenggajian(uid.toString())
+        uid = pref.getString("uid", null).toString()
+        penggajianViewModel.fetchPenggajian(uid)
         observeData()
         observeDataSearch()
         binding.searchview.setOnQueryTextListener(object :
-           SearchView.OnQueryTextListener {
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
@@ -80,8 +82,13 @@ class RiwayatActivity : AppCompatActivity() {
 
         })
 
-
+        binding.refresh.setOnRefreshListener {
+            penggajianViewModel.fetchPenggajian(uid)
+            observeData()
+            binding.refresh.isRefreshing = false
+        }
     }
+
     private fun observeData() {
         penggajianViewModel.penggajianList.observe(this) { penggajianList ->
             riwayatAdapter.updateData(penggajianList)
@@ -90,11 +97,14 @@ class RiwayatActivity : AppCompatActivity() {
 
     private fun observeDataSearch() {
         penggajianViewModel.searchResults.observe(this) { penggajianList ->
-            riwayatAdapter.updateData(penggajianList)
+            penggajianList?.let {
+                riwayatAdapter.updateData(it)
+            }
+
         }
     }
 
-    private fun showLoading(isLoading:Boolean){
+    private fun showLoading(isLoading: Boolean) {
         binding.progressCircular.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }
