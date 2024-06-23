@@ -3,7 +3,9 @@ package com.azhar.absensi.view.spp
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -23,6 +25,7 @@ class RiwayatSppActivity : AppCompatActivity() {
     private lateinit var binding: ActivityRiwayatSppBinding
     private lateinit var cardListSppAdapter: CardListSppAdapter
     private lateinit var listSpp: ArrayList<DataSpp>
+    private lateinit var listDataSppOriginal: ArrayList<DataSpp>
     private lateinit var firestore: Firestore
     private lateinit var pref: SharedPreferences
     var uid: String? = null
@@ -38,6 +41,7 @@ class RiwayatSppActivity : AppCompatActivity() {
 
     private fun initComponents(){
         listSpp = ArrayList()
+        listDataSppOriginal = ArrayList()
         firestore = Firestore.instance
         pref = getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         uid = pref.getString("uid", "")
@@ -50,6 +54,7 @@ class RiwayatSppActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener {  result ->
                 listSpp.clear()
+                listDataSppOriginal.clear()
                 for (document in result){
                     val getdataSpp = document.data
 
@@ -64,6 +69,7 @@ class RiwayatSppActivity : AppCompatActivity() {
                         jenis_les = getdataSpp["jenis_les"].toString()
                     )
                     listSpp.add(dataSpp)
+                    listDataSppOriginal.add(dataSpp)
                     showRecyclerCardList()
                 }
             }
@@ -75,12 +81,49 @@ class RiwayatSppActivity : AppCompatActivity() {
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
+
+        binding.edSearch.clearFocus()
+        binding.edSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener,
+            androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    try {
+                        filter(newText)
+                    } catch (e: Exception){
+                        Toast.makeText(this@RiwayatSppActivity, "Ops.. something wrong", Toast.LENGTH_SHORT).show()
+                        Log.e("search", e.message.toString())
+                    }
+                }
+                return true
+            }
+        })
+    }
+
+    private fun filter(newText: String?) {
+        val listM: ArrayList<DataSpp> = ArrayList()
+        for (item in listDataSppOriginal) {
+            if (item.nama_guru.lowercase().contains(newText?.lowercase() ?: "") ||
+                item.nama_murid.lowercase().contains(newText?.lowercase() ?: "")
+            ) {
+                listM.add(item)
+            }
+        }
+        if (listM.isEmpty()) {
+//            Toast.makeText(this@LihatActivity, "Not found", Toast.LENGTH_SHORT).show()
+        } else {
+            cardListSppAdapter.submitList(listM)
+        }
     }
 
     private fun showRecyclerCardList(){
         binding.rvHistory.layoutManager = LinearLayoutManager(this)
-        cardListSppAdapter = CardListSppAdapter(listSpp)
+        cardListSppAdapter = CardListSppAdapter()
         binding.rvHistory.adapter = cardListSppAdapter
+        cardListSppAdapter.submitList(listSpp)
 
         if (listSpp.isEmpty()){
             binding.tvNotFound.visibility = View.VISIBLE
