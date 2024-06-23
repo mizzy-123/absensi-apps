@@ -49,6 +49,17 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <SearchView
+                android:id="@+id/ed_search"
+                android:transitionName="search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:queryHint="Cari riwayat spp"
+                android:iconifiedByDefault="false"
+                android:layout_marginHorizontal="8dp"
+                android:background="@drawable/rectangle_search"/>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvHistory"
                 android:layout_width="match_parent"

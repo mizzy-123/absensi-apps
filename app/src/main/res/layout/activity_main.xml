@@ -36,17 +36,17 @@
             android:textSize="24sp"
             android:textStyle="bold" />
 
-        <androidx.appcompat.widget.AppCompatTextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="20dp"
-            android:gravity="center"
-            android:text="Absensi membutuhkan info lokasi dan hanya bisa dilakukan jika kamu Foto Selfie."
-            android:textColor="@color/black"
-            android:textSize="16sp" />
+<!--        <androidx.appcompat.widget.AppCompatTextView-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_marginStart="20dp"-->
+<!--            android:layout_marginTop="10dp"-->
+<!--            android:layout_marginEnd="20dp"-->
+<!--            android:gravity="center"-->
+<!--            android:text="Absensi membutuhkan info lokasi dan hanya bisa dilakukan jika kamu Foto Selfie."-->
+<!--            android:textColor="@color/black"-->
+<!--            android:textSize="16sp" />-->
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -251,7 +251,7 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="20dp"
                         android:layout_weight="1"
-                        android:text="Riwayat Kegiatan"
+                        android:text="Riwayat Jumlah SPP"
                         android:textColor="@color/white"
                         android:textSize="24sp"
                         android:textStyle="bold" />

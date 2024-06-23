@@ -44,6 +44,12 @@ class RegisterActivity : AppCompatActivity() {
             }
 
         }
+
+        binding.tvLogin.setOnClickListener {
+            val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
     }
 
     fun SignUp(username:String, password:String, confPass:String) {
