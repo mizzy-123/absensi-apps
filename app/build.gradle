@@ -29,7 +29,7 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
 
-    buildFeatures {
+    buildFeatures{
         viewBinding = true
     }
 }
@@ -95,5 +95,4 @@ dependencies {
 
     // Sweet alert
     implementation 'com.github.f0ris.sweetalert:library:1.6.2'
-
 }

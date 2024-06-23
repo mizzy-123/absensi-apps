@@ -34,6 +34,7 @@ class RiwayatSppActivity : AppCompatActivity() {
 
         initComponents()
         setAction()
+
     }
 
     private fun initComponents(){

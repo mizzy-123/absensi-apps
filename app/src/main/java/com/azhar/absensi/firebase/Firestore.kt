@@ -26,7 +26,11 @@ class Firestore private constructor() {
         return getCollection().document(userId)
     }
 
-    fun getPenggajian(userId: String, onSuccess: (List<Penggajian>) -> Unit, onFailure: (Exception) -> Unit) {
+    fun getPenggajian(
+        userId: String,
+        onSuccess: (List<Penggajian>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
         getDocument(userId).collection("gaji").get()
             .addOnSuccessListener { querySnapshot ->
                 val penggajianList = querySnapshot.documents.mapNotNull { document ->
@@ -38,4 +42,29 @@ class Firestore private constructor() {
                 onFailure(exception)
             }
     }
+
+    fun searchPenggajianByNamaGuru(
+        query: String,
+        userId: String,
+        onSuccess: (List<Penggajian>) -> Unit,
+        onFailure: (Exception) -> Unit
+    ) {
+        getDocument(userId).collection("gaji")
+            .get()
+            .addOnSuccessListener { querySnapshot ->
+                val penggajianList = querySnapshot.documents.mapNotNull { document ->
+                    document.toObject(Penggajian::class.java)
+                }
+                val filteredList = penggajianList.filter { penggajian ->
+                    penggajian.nama_guru.contains(query, ignoreCase = true) || penggajian.tgl_gaji.contains(query, ignoreCase = true)
+
+                }
+                onSuccess(filteredList)
+            }
+            .addOnFailureListener { exception ->
+                onFailure(exception)
+            }
+    }
+
+
 }
