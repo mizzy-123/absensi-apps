@@ -10,3 +10,15 @@ class DataSpp(
     var nominal: Int,
     val timestamp: Long
 )
+
+class GetDataSpp(
+    val id: String,
+    val nama_murid: String,
+    val nama_guru: String,
+    val foto: String,
+    val jatuh_tempo: Long,
+    val tgl_bayar: Long,
+    val jenis_les: String,
+    var nominal: Int,
+    val timestamp: Long
+)

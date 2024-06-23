@@ -7,12 +7,23 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.azhar.absensi.databinding.ListRiwayatSppBinding
 import com.azhar.absensi.model.DataSpp
+import com.azhar.absensi.model.GetDataSpp
 import com.azhar.absensi.utils.formatToRupiah
 import com.azhar.absensi.utils.stampToSimpleDate
 import com.bumptech.glide.Glide
 
 class CardListSppAdapter() :
- ListAdapter<DataSpp, CardListSppAdapter.ListViewHolder>(DIFF_CALLBACK) {
+ ListAdapter<GetDataSpp, CardListSppAdapter.ListViewHolder>(DIFF_CALLBACK) {
+
+    private lateinit var onItemClickCallback: OnItemClickCallback
+
+    interface OnItemClickCallback {
+        fun onItemClicked(data: GetDataSpp)
+    }
+
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
+        this.onItemClickCallback = onItemClickCallback
+    }
 
     inner class ListViewHolder(var binding: ListRiwayatSppBinding) : RecyclerView.ViewHolder(binding.root)
 
@@ -34,15 +45,16 @@ class CardListSppAdapter() :
             view.tvJenisLes.text = dataSpp.jenis_les
             view.tvjumlahspp.text = formatToRupiah(dataSpp.nominal)
         }
+        p0.itemView.setOnClickListener { onItemClickCallback.onItemClicked(dataSpp) }
     }
 
     companion object {
-        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<DataSpp>(){
-            override fun areItemsTheSame(p0: DataSpp, p1: DataSpp): Boolean {
+        val DIFF_CALLBACK = object : DiffUtil.ItemCallback<GetDataSpp>(){
+            override fun areItemsTheSame(p0: GetDataSpp, p1: GetDataSpp): Boolean {
                 return p0 == p1
             }
 
-            override fun areContentsTheSame(p0: DataSpp, p1: DataSpp): Boolean {
+            override fun areContentsTheSame(p0: GetDataSpp, p1: GetDataSpp): Boolean {
                 return p0.timestamp == p1.timestamp
             }
 
