@@ -2,6 +2,7 @@ package com.azhar.absensi.view.spp
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
@@ -179,7 +180,9 @@ class RiwayatSppActivity : AppCompatActivity() {
                 dialog.setItems(dialogItem, DialogInterface.OnClickListener { dialogInterface, i ->
                     when(i){
                         0 -> {
-
+                            val intent = Intent(this@RiwayatSppActivity, InputSppActivity::class.java)
+                            intent.putExtra(SEND_DATA, data)
+                            startActivity(intent)
                         }
                         1 -> {
                             pDialog.show()
@@ -211,5 +214,9 @@ class RiwayatSppActivity : AppCompatActivity() {
 
     private fun showLoading(isLoading: Boolean) {
         binding.progressCircular.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+
+    companion object {
+        const val SEND_DATA = "SPP"
     }
 }
