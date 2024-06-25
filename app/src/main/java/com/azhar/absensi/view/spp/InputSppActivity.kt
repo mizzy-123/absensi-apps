@@ -10,6 +10,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.widget.DatePicker
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -52,6 +53,8 @@ class InputSppActivity : AppCompatActivity() {
     var uid: String? = null
     var currentImage: Uri? = null
     var imageUrl = ""
+    var updateCondition = false
+    var uidDocument = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +70,8 @@ class InputSppActivity : AppCompatActivity() {
             }
 
             if (getDataSpp != null){
+                updateCondition = true
+                uidDocument = getDataSpp.id
                 binding.apply {
                     edNamaMurid.setText(getDataSpp.nama_murid)
                     edNamaGuru.setText(getDataSpp.nama_guru)
@@ -119,6 +124,20 @@ class InputSppActivity : AppCompatActivity() {
         pDialog.setCancelable(false)
     }
 
+    private fun deleteImageFromStorage(){
+        val storage = Firebase.storage
+        val storageRef = storage.getReferenceFromUrl(imageUrl)
+
+        storageRef.delete()
+            .addOnSuccessListener {
+                Log.d("InputSppActivity", "Image successfully deleted")
+                uploadImageToFirebasStorage(currentImage!!)
+            }
+            .addOnFailureListener { exception ->
+                Log.d("InputSppActivity", "Error deleting image: ${exception.message}")
+            }
+    }
+
     private fun uploadImageToFirebasStorage(imageUri: Uri){
         pDialog.show()
         val imageName = "${UUID.randomUUID()}.jpg"
@@ -148,27 +167,53 @@ class InputSppActivity : AppCompatActivity() {
         val nama_guru = binding.edNamaGuru.text.toString()
         val jenis_les = binding.edLes.text.toString()
         val nominal = ClearValue.hapus(binding.inputjumlahspp.text.toString()).toInt()
-        firestore
-            .getDocument(uid!!)
-            .collection("spp")
-            .add(DataSpp(
-                nama_murid = nama_murid,
-                nama_guru = nama_guru,
-                foto = imageUrl,
-                jatuh_tempo = jatuhTempo,
-                tgl_bayar = tanggalBayar,
-                jenis_les = jenis_les,
-                nominal = nominal,
-                timestamp = System.currentTimeMillis()
-            )).addOnSuccessListener {
-                pDialog.dismiss()
-                Toast.makeText(this, "Berhasil di simpan", Toast.LENGTH_LONG).show()
-                inputReset()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Gagal di simpan", Toast.LENGTH_SHORT).show()
-                pDialog.dismiss()
-            }
+        if (updateCondition){
+            firestore
+                .getDocument(uid!!)
+                .collection("spp")
+                .document(uidDocument)
+                .set(DataSpp(
+                    nama_murid = nama_murid,
+                    nama_guru = nama_guru,
+                    foto = imageUrl,
+                    jatuh_tempo = jatuhTempo,
+                    tgl_bayar = tanggalBayar,
+                    jenis_les = jenis_les,
+                    nominal = nominal,
+                    timestamp = System.currentTimeMillis()
+                )).addOnSuccessListener {
+                    pDialog.dismiss()
+                    Toast.makeText(this, "Berhasil di simpan", Toast.LENGTH_LONG).show()
+                    inputReset()
+                    finish()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Gagal di simpan", Toast.LENGTH_SHORT).show()
+                    pDialog.dismiss()
+                }
+        } else {
+            firestore
+                .getDocument(uid!!)
+                .collection("spp")
+                .add(DataSpp(
+                    nama_murid = nama_murid,
+                    nama_guru = nama_guru,
+                    foto = imageUrl,
+                    jatuh_tempo = jatuhTempo,
+                    tgl_bayar = tanggalBayar,
+                    jenis_les = jenis_les,
+                    nominal = nominal,
+                    timestamp = System.currentTimeMillis()
+                )).addOnSuccessListener {
+                    pDialog.dismiss()
+                    Toast.makeText(this, "Berhasil di simpan", Toast.LENGTH_LONG).show()
+                    inputReset()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Gagal di simpan", Toast.LENGTH_SHORT).show()
+                    pDialog.dismiss()
+                }
+        }
     }
 
     private fun saveDataSppWithoutImage(){
@@ -176,27 +221,53 @@ class InputSppActivity : AppCompatActivity() {
         val nama_guru = binding.edNamaGuru.text.toString()
         val jenis_les = binding.edLes.text.toString()
         val nominal = ClearValue.hapus(binding.inputjumlahspp.text.toString()).toInt()
-        firestore
-            .getDocument(uid!!)
-            .collection("spp")
-            .add(DataSpp(
-                nama_murid = nama_murid,
-                nama_guru = nama_guru,
-                foto = imageUrl,
-                jatuh_tempo = jatuhTempo,
-                tgl_bayar = tanggalBayar,
-                jenis_les = jenis_les,
-                nominal = nominal,
-                timestamp = System.currentTimeMillis()
-            )).addOnSuccessListener {
-                pDialog.dismiss()
-                Toast.makeText(this, "Berhasil di simpan", Toast.LENGTH_LONG).show()
-                inputReset()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Gagal di simpan", Toast.LENGTH_SHORT).show()
-                pDialog.dismiss()
-            }
+        if (updateCondition){
+            firestore
+                .getDocument(uid!!)
+                .collection("spp")
+                .document(uidDocument)
+                .set(DataSpp(
+                    nama_murid = nama_murid,
+                    nama_guru = nama_guru,
+                    foto = imageUrl,
+                    jatuh_tempo = jatuhTempo,
+                    tgl_bayar = tanggalBayar,
+                    jenis_les = jenis_les,
+                    nominal = nominal,
+                    timestamp = System.currentTimeMillis()
+                )).addOnSuccessListener {
+                    pDialog.dismiss()
+                    Toast.makeText(this, "Berhasil di simpan", Toast.LENGTH_LONG).show()
+                    inputReset()
+                    finish()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Gagal di simpan", Toast.LENGTH_SHORT).show()
+                    pDialog.dismiss()
+                }
+        } else {
+            firestore
+                .getDocument(uid!!)
+                .collection("spp")
+                .add(DataSpp(
+                    nama_murid = nama_murid,
+                    nama_guru = nama_guru,
+                    foto = imageUrl,
+                    jatuh_tempo = jatuhTempo,
+                    tgl_bayar = tanggalBayar,
+                    jenis_les = jenis_les,
+                    nominal = nominal,
+                    timestamp = System.currentTimeMillis()
+                )).addOnSuccessListener {
+                    pDialog.dismiss()
+                    Toast.makeText(this, "Berhasil di simpan", Toast.LENGTH_LONG).show()
+                    inputReset()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "Gagal di simpan", Toast.LENGTH_SHORT).show()
+                    pDialog.dismiss()
+                }
+        }
     }
 
     private fun inputReset() {
@@ -263,7 +334,11 @@ class InputSppActivity : AppCompatActivity() {
 
         binding.btnSimpan.setOnClickListener {
             if (currentImage != null){
-                uploadImageToFirebasStorage(currentImage!!)
+                if (updateCondition){
+                    deleteImageFromStorage()
+                } else {
+                    uploadImageToFirebasStorage(currentImage!!)
+                }
             } else {
                 saveDataSppWithoutImage()
             }
