@@ -1,4 +1,5 @@
 package com.azhar.absensi.view.penggajian.penggajianguru
+
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
@@ -13,79 +14,88 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.azhar.absensi.R
 import com.azhar.absensi.databinding.ActivityPenggajianGuruBinding
 import com.azhar.absensi.firebase.Firestore
+import com.azhar.absensi.model.Penggajian
+import com.azhar.absensi.view.penggajian.riwayatpenggajian.RiwayatActivity
 import java.text.NumberFormat
 import java.util.Locale
 
 
 class PenggajianGuruActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityPenggajianGuruBinding
+    private lateinit var binding: ActivityPenggajianGuruBinding
     private var jumlahGaji1: Int = 0
     private var jumlahGaji2: Int = 0
     private lateinit var viewModel: PenggajianGuruViewModel
     private lateinit var pref: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var pDialog: SweetAlertDialog
-    private fun initComponents(){
+    var documentId = ""
+    private fun initComponents() {
         pref = getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         editor = pref.edit()
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPenggajianGuruBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         initComponents()
         val firestore = Firestore.instance
         val viewModelFactory = PenggajianGuruViewModelFactory(firestore)
         pDialog = SweetAlertDialog(this, SweetAlertDialog.PROGRESS_TYPE)
         pDialog.titleText = "Process..."
-        pDialog.progressHelper.barColor = ContextCompat.getColor(this, android.R.color.holo_red_light)
+        pDialog.progressHelper.barColor =
+            ContextCompat.getColor(this, android.R.color.holo_red_light)
         pDialog.setCancelable(false)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(PenggajianGuruViewModel::class.java)
+        viewModel =
+            ViewModelProvider(this, viewModelFactory).get(PenggajianGuruViewModel::class.java)
 
-        val datePicker = DatePickerHelper(this,binding.etTgl)
+        val datePicker = DatePickerHelper(this, binding.etTgl)
 
         val anim = AnimationUtils.loadAnimation(this, R.anim.btn_click)
+
         binding.etTgl.setOnClickListener {
             datePicker.showDatePickerDialog()
         }
-
 
         binding.btnMinus.setOnClickListener {
             it.startAnimation(anim)
             if (jumlahGaji1 > 0) {
                 jumlahGaji1--
-                binding.tvJumlah.text=jumlahGaji1.toString()
-                updateNilai(jumlahGaji1,binding.etGaji1,140000)
+                binding.tvJumlah.text = jumlahGaji1.toString()
+                updateNilai(jumlahGaji1, binding.etGaji1, 140000)
             }
         }
-
 
         binding.btnPlus.setOnClickListener {
             it.startAnimation(anim)
             jumlahGaji1++
-            binding.tvJumlah.text=jumlahGaji1.toString()
-            updateNilai(jumlahGaji1,binding.etGaji1,140000)
+            binding.tvJumlah.text = jumlahGaji1.toString()
+            updateNilai(jumlahGaji1, binding.etGaji1, 140000)
         }
 
         binding.btnMinus2.setOnClickListener {
             it.startAnimation(anim)
             if (jumlahGaji2 > 0) {
                 jumlahGaji2--
-                binding.tvJumlah2.text=jumlahGaji2.toString()
-                updateNilai(jumlahGaji2,binding.etGaji2,160000)
+                binding.tvJumlah2.text = jumlahGaji2.toString()
+                updateNilai(jumlahGaji2, binding.etGaji2, 160000)
             }
         }
 
         binding.btnPlus2.setOnClickListener {
             it.startAnimation(anim)
             jumlahGaji2++
-            binding.tvJumlah2.text=jumlahGaji2.toString()
-            updateNilai(jumlahGaji2,binding.etGaji2,160000)
+            binding.tvJumlah2.text = jumlahGaji2.toString()
+            updateNilai(jumlahGaji2, binding.etGaji2, 160000)
         }
 
         binding.btnSimpan.setOnClickListener {
-           validateFields()
+            if (binding.btnSimpan.text == "Simpan") {
+                validateFields()
+            } else {
+                validateFieldsUpdate()
+            }
+
         }
 
         binding.toolbar.setNavigationOnClickListener {
@@ -101,14 +111,28 @@ class PenggajianGuruActivity : AppCompatActivity() {
                 pDialog.dismiss()
                 clearEditText()
             }.onFailure { exception ->
-                Toast.makeText(this, "Gagal menyimpan data: ${exception.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this,
+                    "Gagal menyimpan data: ${exception.message}",
+                    Toast.LENGTH_LONG
+                ).show()
                 pDialog.dismiss()
             }
         }
 
+        val penggajianData = intent.getParcelableExtra<Penggajian>(RiwayatActivity.SEND_DATA)
+        penggajianData?.let {
+            binding.inputNama.setText(penggajianData.nama_guru)
+            binding.etGaji1.setText(penggajianData.gaji1.toString())
+            binding.etGaji2.setText(penggajianData.gaji2.toString())
+            binding.etBonus.setText(penggajianData.bonus.toString())
+            binding.etTgl.setText(penggajianData.tgl_gaji)
+            documentId = penggajianData.id
+            binding.btnSimpan.setText("Update")
+        }
     }
 
-    private fun updateNilai(jumlah: Int, etGaji: EditText,nilai:Int) {
+    private fun updateNilai(jumlah: Int, etGaji: EditText, nilai: Int) {
         val nilaiRupiah = jumlah * nilai
         val formatRupiah = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
         formatRupiah.maximumFractionDigits = 0
@@ -142,10 +166,31 @@ class PenggajianGuruActivity : AppCompatActivity() {
         if (uid != null) {
             viewModel.uploadPenggajian(uid, penggajianData)
         }
-        //Toast.makeText(this, "Data Yang Disimpan :$uid $namaGuru, $gaji1, $gaji2, $tgl, $bonus", Toast.LENGTH_LONG).show()
     }
 
-    fun clearEditText(){
+    private fun updatePenggajian() {
+        pDialog.show()
+        val uid = pref.getString("uid", null)
+        val namaGuru = binding.inputNama.text.toString()
+        val gaji1 = ClearValue.hapus(binding.etGaji1.text.toString())
+        val gaji2 = ClearValue.hapus(binding.etGaji2.text.toString())
+        val tgl = binding.etTgl.text.toString()
+        val bonus = ClearValue.hapus(binding.etBonus.text.toString())
+
+        val penggajianData = mapOf(
+            "nama_guru" to namaGuru,
+            "gaji1" to gaji1.toInt(),
+            "gaji2" to gaji2.toInt(),
+            "tgl_gaji" to tgl,
+            "bonus" to bonus.toInt()
+        )
+
+        if (uid != null && documentId != "") {
+            viewModel.updatePenggajian(uid, documentId, penggajianData)
+        }
+    }
+
+    fun clearEditText() {
         binding.inputNama.setText("")
         binding.etGaji2.setText("")
         binding.etGaji1.setText("")
@@ -173,7 +218,32 @@ class PenggajianGuruActivity : AppCompatActivity() {
             Toast.makeText(this, "Silahkan isi semua field yang diperlukan", Toast.LENGTH_SHORT)
                 .show()
         } else {
-           simpanPenggajian()
+            simpanPenggajian()
+        }
+    }
+
+    private fun validateFieldsUpdate() {
+        if (TextUtils.isEmpty(binding.inputNama.getText())) {
+            binding.inputNama.error = "Nama tidak boleh kosong"
+        }
+        if (TextUtils.isEmpty(binding.etGaji1.getText())) {
+            binding.etGaji1.error = "Gaji 1 tidak boleh kosong"
+        }
+        if (TextUtils.isEmpty(binding.etGaji2.getText())) {
+            binding.etGaji2.error = "Gaji 2 tidak boleh kosong"
+        }
+        if (TextUtils.isEmpty(binding.etBonus.getText())) {
+            binding.etBonus.error = "Bonus tidak boleh kosong"
+        }
+        if (TextUtils.isEmpty(binding.etTgl.getText())) {
+            binding.etTgl.error = "Tanggal tidak boleh kosong"
+        }
+        if (!isAllFieldsValid()) {
+            Toast.makeText(this, "Silahkan isi semua field yang diperlukan", Toast.LENGTH_SHORT)
+                .show()
+        } else {
+            updatePenggajian()
+            finish()
         }
     }
 

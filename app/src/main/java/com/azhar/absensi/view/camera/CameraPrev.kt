@@ -22,14 +22,12 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.azhar.absensi.R
 import com.azhar.absensi.databinding.ActivityCameraPrevBinding
-import com.azhar.absensi.view.absen.AbsenActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.jar.Manifest
 
 class CameraPrev : AppCompatActivity() {
 

@@ -6,12 +6,21 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.azhar.absensi.R
+import com.azhar.absensi.model.GetDataSpp
 import com.azhar.absensi.model.Penggajian
+import com.azhar.absensi.view.spp.CardListSppAdapter.OnItemClickCallback
 import java.text.NumberFormat
 import java.util.Locale
 
 class RiwayatAdapter(private var penggajianList: List<Penggajian>) : RecyclerView.Adapter<RiwayatAdapter.PenggajianViewHolder>() {
+    private lateinit var onItemClickCallback: OnItemClickCallback
+    interface OnItemClickCallback {
+        fun onItemClicked(data: Penggajian)
+    }
 
+    fun setOnItemClickCallback(onItemClickCallback: RiwayatAdapter.OnItemClickCallback) {
+        this.onItemClickCallback = onItemClickCallback
+    }
     inner class PenggajianViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val namaGuru: TextView = itemView.findViewById(R.id.tv_nama_guru)
         private val gaji1: TextView = itemView.findViewById(R.id.tv_gaji_guru)
@@ -25,6 +34,9 @@ class RiwayatAdapter(private var penggajianList: List<Penggajian>) : RecyclerVie
             namaGuru.text = penggajian.nama_guru
             gaji1.text = formatTotalGaji.toString()
             tgl.text = penggajian.tgl_gaji
+            itemView.setOnClickListener {
+                onItemClickCallback.onItemClicked(penggajian)
+            }
         }
     }
 

@@ -24,12 +24,10 @@ class PenggajianActivity : AppCompatActivity() {
         }
 
         binding.cvPenggajianguru.setOnClickListener {
-            it.startAnimation(anim)
             startActivity(Intent(this@PenggajianActivity,PenggajianGuruActivity::class.java))
         }
 
         binding.cvRiwayat.setOnClickListener {
-            it.startAnimation(anim)
             startActivity(Intent(this@PenggajianActivity,RiwayatActivity::class.java))
         }
     }
