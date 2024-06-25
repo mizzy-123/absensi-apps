@@ -7,6 +7,7 @@ import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -148,8 +149,7 @@ class RiwayatActivity : AppCompatActivity() {
         observeData()
         observeDataSearch()
         binding.searchview.setOnQueryTextListener(
-            object :
-                androidx.appcompat.widget.SearchView.OnQueryTextListener {
+            object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
                     return false
                 }
