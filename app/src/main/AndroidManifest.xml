@@ -58,12 +58,6 @@
             android:name=".view.camera.CameraPrev"
             android:exported="false" />
         <activity
-            android:name=".view.history.HistoryActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.absen.AbsenActivity"
-            android:exported="false" />
-        <activity
             android:name=".view.main.MainActivity"
             android:exported="false" />
         <activity

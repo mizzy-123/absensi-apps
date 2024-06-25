@@ -8,8 +8,6 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.azhar.absensi.databinding.ActivityMainBinding
 import com.azhar.absensi.utils.SessionLogin
-import com.azhar.absensi.view.absen.AbsenActivity
-import com.azhar.absensi.view.history.HistoryActivity
 import com.azhar.absensi.view.historyv2.RiwayatJumlahActivity
 import com.azhar.absensi.view.login.LoginActivity
 import com.azhar.absensi.view.spp.MainSppActivity
@@ -56,7 +54,6 @@ class MainActivity : AppCompatActivity() {
         binding.cvAbsenMasuk.setOnClickListener {
             strTitle = "Absen Masuk"
             val intent = Intent(this@MainActivity, PenggajianActivity::class.java)
-            intent.putExtra(AbsenActivity.DATA_TITLE, strTitle)
             startActivity(intent)
         }
 
