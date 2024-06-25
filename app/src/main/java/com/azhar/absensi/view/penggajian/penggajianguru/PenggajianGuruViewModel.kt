@@ -45,6 +45,17 @@ class PenggajianGuruViewModel(private val firestore: Firestore) : ViewModel() {
 
             }
     }
+    fun updatePenggajian(userId: String,documentId:String, penggajianData: Map<String, Any>) {
+        firestore.getDocument(userId).collection("gaji").document(documentId).set(penggajianData)
+            .addOnSuccessListener {
+                _uploadState.value = Result.success(Unit)
+
+            }
+            .addOnFailureListener { exception ->
+                _uploadState.value = Result.failure(exception)
+
+            }
+    }
 
     fun fetchPenggajian(userId: String) {
         _isLoading.value =true

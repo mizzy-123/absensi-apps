@@ -1,6 +1,7 @@
 package com.azhar.absensi.view.penggajian.penggajianguru
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.animation.AnimationUtils
@@ -13,7 +14,15 @@ import cn.pedant.SweetAlert.SweetAlertDialog
 import com.azhar.absensi.R
 import com.azhar.absensi.databinding.ActivityPenggajianGuruBinding
 import com.azhar.absensi.firebase.Firestore
+import com.azhar.absensi.model.GetDataSpp
+import com.azhar.absensi.model.Penggajian
+import com.azhar.absensi.view.penggajian.riwayatpenggajian.RiwayatActivity
+import com.azhar.absensi.view.spp.RiwayatSppActivity
+import com.bumptech.glide.Glide
+import java.text.DecimalFormat
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 
@@ -25,6 +34,7 @@ class PenggajianGuruActivity : AppCompatActivity() {
     private lateinit var pref: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
     private lateinit var pDialog: SweetAlertDialog
+    var documentId = ""
     private fun initComponents(){
         pref = getSharedPreferences("userInfo", Context.MODE_PRIVATE)
         editor = pref.edit()
@@ -33,7 +43,6 @@ class PenggajianGuruActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPenggajianGuruBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         initComponents()
         val firestore = Firestore.instance
         val viewModelFactory = PenggajianGuruViewModelFactory(firestore)
@@ -85,7 +94,12 @@ class PenggajianGuruActivity : AppCompatActivity() {
         }
 
         binding.btnSimpan.setOnClickListener {
-           validateFields()
+            if(binding.btnSimpan.text=="Simpan"){
+                validateFields()
+            }else{
+                updatePenggajian()
+            }
+
         }
 
         binding.toolbar.setNavigationOnClickListener {
@@ -106,6 +120,16 @@ class PenggajianGuruActivity : AppCompatActivity() {
             }
         }
 
+        val penggajianData = intent.getParcelableExtra<Penggajian>(RiwayatActivity.SEND_DATA)
+        penggajianData?.let {
+            binding.inputNama.setText(penggajianData.nama_guru)
+            binding.etGaji1.setText(penggajianData.gaji1.toString())
+            binding.etGaji2.setText(penggajianData.gaji2.toString())
+            binding.etBonus.setText(penggajianData.bonus.toString())
+            binding.etTgl.setText(penggajianData.tgl_gaji)
+            documentId = penggajianData.id
+            binding.btnSimpan.setText("Update")
+        }
     }
 
     private fun updateNilai(jumlah: Int, etGaji: EditText,nilai:Int) {
@@ -144,6 +168,29 @@ class PenggajianGuruActivity : AppCompatActivity() {
         }
         //Toast.makeText(this, "Data Yang Disimpan :$uid $namaGuru, $gaji1, $gaji2, $tgl, $bonus", Toast.LENGTH_LONG).show()
     }
+    private fun updatePenggajian() {
+        pDialog.show()
+        val uid = pref.getString("uid", null)
+        val namaGuru = binding.inputNama.text.toString()
+        val gaji1 = ClearValue.hapus(binding.etGaji1.text.toString())
+        val gaji2 = ClearValue.hapus(binding.etGaji2.text.toString())
+        val tgl = binding.etTgl.text.toString()
+        val bonus = ClearValue.hapus(binding.etBonus.text.toString())
+
+        val penggajianData = mapOf(
+            "nama_guru" to namaGuru,
+            "gaji1" to gaji1.toInt(),
+            "gaji2" to gaji2.toInt(),
+            "tgl_gaji" to tgl,
+            "bonus" to bonus.toInt()
+        )
+
+        if (uid != null && documentId != "") {
+            viewModel.updatePenggajian(uid,documentId, penggajianData)
+        }
+        //Toast.makeText(this, "Data Yang Disimpan :$uid $namaGuru, $gaji1, $gaji2, $tgl, $bonus", Toast.LENGTH_LONG).show()
+    }
+
 
     fun clearEditText(){
         binding.inputNama.setText("")

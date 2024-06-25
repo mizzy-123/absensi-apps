@@ -34,7 +34,7 @@ class Firestore private constructor() {
         getDocument(userId).collection("gaji").get()
             .addOnSuccessListener { querySnapshot ->
                 val penggajianList = querySnapshot.documents.mapNotNull { document ->
-                    document.toObject(Penggajian::class.java)
+                    document.toObject(Penggajian::class.java)?.copy(id = document.id)
                 }
                 onSuccess(penggajianList)
             }
