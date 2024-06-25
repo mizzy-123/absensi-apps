@@ -44,7 +44,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.appcompat.widget.SearchView
+    <SearchView
         android:id="@+id/searchview"
         android:layout_width="match_parent"
         android:layout_height="50dp"
@@ -54,14 +54,13 @@
         android:background="@drawable/bg_search"
         android:elevation="4dp"
         android:theme="@style/SearchViewStyle2"
-        app:iconifiedByDefault="false"
+        android:iconifiedByDefault="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appbar"
-        app:queryBackground="?attr/colorPrimaryInverse"
-        app:queryHint="Cari Riwayat Gaji"
-        app:searchHintIcon="@drawable/ic_search"
-        app:searchIcon="@drawable/ic_search"></androidx.appcompat.widget.SearchView>
+        android:queryBackground="@color/transparent"
+        android:queryHint="Cari Riwayat Gaji"
+        ></SearchView>
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/refresh"
